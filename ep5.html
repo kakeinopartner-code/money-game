@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>お金と仕事を考えるゲーム｜EP.5 老後の準備と人生最大の支出ラッシュ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #2a3a5c;
+    --navy-light: #eef1f8;
+    --navy-mid: #b0b8d8;
+    --navy-dark: #1a2540;
+    --gold: #b8860b;
+    --gold-light: #fdf8e6;
+    --gold-mid: #e8d090;
+    --amber: #d08020;
+    --amber-light: #fdf5e6;
+    --amber-mid: #f0d090;
+    --teal: #0f8a6e;
+    --teal-light: #e6f7f2;
+    --teal-mid: #a8dece;
+    --coral: #e8604a;
+    --coral-light: #fdf0ee;
+    --coral-mid: #f0b8b0;
+    --lemon: #fffbe6;
+    --yellow: #f0c040;
+    --yellow-dark: #c9a020;
+    --lavender: #f0eefa;
+    --purple: #7c5cbf;
+    --mint: #e6f7f2;
+    --mint-mid: #a8dece;
+    --green: #2eaa7a;
+    --white: #ffffff;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --text: #1a2030;
+    --text-soft: #6a7090;
+    --border: #d0d8e8;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *, *::before, *::after { box-sizing: inherit; margin: 0; padding: 0; }
+  html, body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100%; line-height: 1;
+  }
+
+  .header {
+    background: var(--navy); color: var(--white);
+    padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+    box-shadow: 0 2px 8px rgba(42,58,92,0.25);
+  }
+  .header-ep {
+    background: var(--yellow); color: var(--text);
+    font-size: 11px; font-weight: 900; padding: 4px 9px;
+    border-radius: 4px; white-space: nowrap; letter-spacing: 0.04em;
+  }
+  .header-title { font-size: 13px; font-weight: 700; line-height: 1.35; }
+
+  .progress-wrap { background: var(--navy-mid); height: 5px; }
+  .progress-bar { height: 5px; background: var(--yellow); transition: width 0.5s ease; }
+
+  .container { max-width: 600px; margin: 0 auto; padding: 22px 16px 56px; }
+
+  .scene-card {
+    background: linear-gradient(135deg, var(--navy) 0%, #3a5080 100%);
+    color: var(--white); border-radius: 16px;
+    padding: 24px 22px; margin-bottom: 18px;
+    box-shadow: 0 4px 16px rgba(42,58,92,0.25);
+  }
+  .scene-tag { font-size: 11px; font-weight: 700; color: var(--yellow); letter-spacing: 0.08em; margin-bottom: 10px; }
+  .scene-title { font-size: 20px; font-weight: 900; line-height: 1.45; margin-bottom: 12px; }
+  .scene-body { font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.88); }
+  .character-info {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px; padding: 12px 14px; margin-top: 14px;
+  }
+  .character-avatar {
+    width: 46px; height: 46px; background: var(--yellow);
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 22px; flex-shrink: 0;
+  }
+  .character-detail { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.92); }
+  .character-detail strong { display: block; font-size: 15px; color: #fff; margin-bottom: 2px; }
+
+  /* 支出ラッシュ可視化 */
+  .rush-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin-bottom: 18px;
+  }
+  .rush-item {
+    border-radius: 10px; padding: 12px 13px;
+    border: 1.5px solid var(--border);
+  }
+  .rush-item.edu    { background: var(--amber-light); border-color: var(--amber-mid); }
+  .rush-item.loan   { background: var(--navy-light);  border-color: var(--navy-mid); }
+  .rush-item.care   { background: var(--coral-light); border-color: var(--coral-mid); }
+  .rush-item.retire { background: var(--teal-light);  border-color: var(--teal-mid); }
+  .rush-icon  { font-size: 20px; margin-bottom: 5px; }
+  .rush-label { font-size: 12px; font-weight: 900; margin-bottom: 3px; }
+  .rush-item.edu    .rush-label { color: var(--amber); }
+  .rush-item.loan   .rush-label { color: var(--navy-dark); }
+  .rush-item.care   .rush-label { color: var(--coral); }
+  .rush-item.retire .rush-label { color: var(--teal); }
+  .rush-amount { font-size: 13px; font-weight: 700; color: var(--text); }
+  .rush-sub    { font-size: 11px; color: var(--text-soft); margin-top: 2px; line-height: 1.4; }
+
+  /* ルートバッジ */
+  .route-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 900; padding: 5px 12px;
+    border-radius: 20px; margin-bottom: 12px; letter-spacing: 0.04em;
+  }
+  .route-badge.edu    { background: var(--amber-light); color: var(--amber); border: 1.5px solid var(--amber-mid); }
+  .route-badge.loan   { background: var(--navy-light);  color: var(--navy-dark); border: 1.5px solid var(--navy-mid); }
+  .route-badge.care   { background: var(--coral-light); color: var(--coral); border: 1.5px solid var(--coral-mid); }
+  .route-badge.retire { background: var(--teal-light);  color: var(--teal); border: 1.5px solid var(--teal-mid); }
+  .route-badge.common { background: var(--mint); color: var(--green); border: 1.5px solid var(--mint-mid); }
+
+  .question-card {
+    background: var(--card); border-radius: 14px;
+    padding: 22px 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 10px rgba(26,32,48,0.07);
+    border: 1.5px solid var(--border);
+  }
+  .q-step { font-size: 11px; font-weight: 700; color: var(--text-soft); letter-spacing: 0.06em; margin-bottom: 8px; }
+  .q-label {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 4px; margin-bottom: 10px;
+  }
+  .q-label.reason { background: var(--lavender); color: var(--purple); border: 1px solid #c5b8ee; }
+  .q-text { font-size: 16px; font-weight: 700; line-height: 1.65; margin-bottom: 6px; color: var(--text); }
+  .q-sub  { font-size: 13px; color: var(--text-soft); line-height: 1.65; margin-bottom: 16px; }
+
+  .info-box {
+    border-radius: 10px; padding: 13px 15px; margin-bottom: 16px;
+    font-size: 13px; line-height: 1.8; color: var(--text);
+    border: 1.5px solid var(--border);
+  }
+  .info-box.navy   { background: var(--navy-light);  border-color: var(--navy-mid); }
+  .info-box.navy strong  { color: var(--navy-dark); }
+  .info-box.amber  { background: var(--amber-light); border-color: var(--amber-mid); }
+  .info-box.amber strong { color: var(--amber); }
+  .info-box.coral  { background: var(--coral-light); border-color: var(--coral-mid); }
+  .info-box.coral strong { color: var(--coral); }
+  .info-box.teal   { background: var(--teal-light);  border-color: var(--teal-mid); }
+  .info-box.teal strong  { color: var(--teal); }
+
+  /* デュアル選択 */
+  .dual-instructions { display: flex; gap: 8px; margin-bottom: 12px; }
+  .dual-badge {
+    flex: 1; text-align: center; font-size: 11px; font-weight: 700;
+    padding: 6px 8px; border-radius: 7px; line-height: 1.4;
+  }
+  .dual-badge.best  { background: var(--mint); color: var(--green); border: 1.5px solid var(--mint-mid); }
+  .dual-badge.worst { background: var(--coral-light); color: var(--coral); border: 1.5px solid var(--coral-mid); }
+
+  .dual-options { display: flex; flex-direction: column; gap: 10px; }
+  .dual-option {
+    background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 13px 14px;
+    font-size: 14px; font-weight: 500; color: var(--text);
+    line-height: 1.55; display: flex; align-items: flex-start; gap: 10px;
+  }
+  .dual-option-text { flex: 1; }
+  .dual-btns { display: flex; gap: 6px; flex-shrink: 0; margin-top: 2px; }
+  .dual-btn {
+    border: none; border-radius: 6px; padding: 6px 10px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 11px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .dual-btn.best-btn  { background: var(--mint); color: var(--green); border: 1.5px solid var(--mint-mid); }
+  .dual-btn.worst-btn { background: var(--coral-light); color: var(--coral); border: 1.5px solid var(--coral-mid); }
+  .dual-btn.best-btn.active  { background: var(--green); color: #fff; }
+  .dual-btn.worst-btn.active { background: var(--coral); color: #fff; }
+  .dual-btn:disabled { opacity: 0.45; cursor: default; }
+
+  .confirm-btn {
+    width: 100%; background: var(--navy); color: #fff;
+    border: none; border-radius: 10px; padding: 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    margin-top: 14px; display: none; transition: background 0.15s;
+  }
+  .confirm-btn:hover { background: var(--navy-dark); }
+  .confirm-btn.show { display: block; }
+  .confirm-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .feedback-box {
+    background: var(--navy-light); border: 1.5px solid var(--navy-mid);
+    border-radius: 10px; padding: 16px 18px;
+    margin-top: 14px; display: none;
+    animation: fadeSlide 0.3s ease;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.amber  { background: var(--amber-light); border-color: var(--amber-mid); }
+  .feedback-box.coral  { background: var(--coral-light); border-color: var(--coral-mid); }
+  .feedback-box.teal   { background: var(--teal-light);  border-color: var(--teal-mid); }
+  .feedback-box.common { background: var(--mint); border-color: var(--mint-mid); }
+  .feedback-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .feedback-icon {
+    width: 28px; height: 28px; background: var(--navy); color: #fff;
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 13px; flex-shrink: 0;
+  }
+  .feedback-icon.amber  { background: var(--amber); }
+  .feedback-icon.coral  { background: var(--coral); }
+  .feedback-icon.teal   { background: var(--teal); }
+  .feedback-icon.common { background: var(--green); }
+  .feedback-label { font-size: 11px; font-weight: 700; color: var(--navy-dark); letter-spacing: 0.05em; }
+  .feedback-label.amber  { color: var(--amber); }
+  .feedback-label.coral  { color: var(--coral); }
+  .feedback-label.teal   { color: var(--teal); }
+  .feedback-label.common { color: var(--green); }
+  .feedback-text { font-size: 14px; line-height: 1.8; color: var(--text); }
+  .feedback-hl {
+    background: var(--white); border-left: 3px solid var(--navy);
+    padding: 9px 13px; margin-top: 10px; border-radius: 0 7px 7px 0;
+    font-size: 13px; font-weight: 700; color: var(--navy-dark); line-height: 1.65;
+  }
+  .feedback-hl.amber  { border-color: var(--amber);  color: var(--amber); }
+  .feedback-hl.coral  { border-color: var(--coral);  color: var(--coral); }
+  .feedback-hl.teal   { border-color: var(--teal);   color: var(--teal); }
+  .feedback-hl.common { border-color: var(--green);  color: var(--green); }
+
+  .ai-box {
+    background: var(--lavender); border: 1.5px solid #c5b8ee;
+    border-radius: 12px; padding: 16px 18px;
+    margin-top: 14px; display: none;
+    animation: fadeSlide 0.35s ease;
+  }
+  .ai-box.show { display: block; }
+  .ai-head { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+  .ai-icon {
+    width: 30px; height: 30px; background: var(--purple); color: #fff;
+    border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-size: 15px; flex-shrink: 0;
+  }
+  .ai-label { font-size: 11px; font-weight: 700; color: var(--purple); letter-spacing: 0.04em; }
+  .ai-text { font-size: 14px; line-height: 1.85; color: var(--text); }
+  .ai-loading { display: flex; align-items: center; gap: 8px; color: var(--text-soft); font-size: 13px; }
+  .dots span {
+    display: inline-block; width: 6px; height: 6px;
+    background: var(--purple); border-radius: 50%; margin: 0 2px; opacity: 0.3;
+    animation: pulse 1.2s infinite;
+  }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+  .ai-unavailable { font-size: 12px; color: var(--text-soft); font-style: italic; }
+
+  .next-btn {
+    width: 100%; background: var(--navy); color: #fff;
+    border: none; border-radius: 10px; padding: 15px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px; font-weight: 900; cursor: pointer;
+    margin-top: 16px; display: none; transition: background 0.15s;
+  }
+  .next-btn:hover { background: var(--navy-dark); }
+  .next-btn.show { display: block; }
+
+  .ending-card {
+    background: linear-gradient(135deg, var(--navy) 0%, #3a5080 100%);
+    color: #fff; border-radius: 16px; padding: 28px 22px;
+    text-align: center; margin-top: 20px;
+    display: none; animation: fadeSlide 0.5s ease;
+    box-shadow: 0 4px 16px rgba(42,58,92,0.3);
+  }
+  .ending-card.show { display: block; }
+  .ending-badge {
+    display: inline-block; background: var(--yellow); color: var(--text);
+    font-size: 12px; font-weight: 900; padding: 5px 16px;
+    border-radius: 20px; margin-bottom: 16px;
+  }
+  .ending-title { font-size: 22px; font-weight: 900; line-height: 1.45; margin-bottom: 18px; }
+  .ending-points {
+    text-align: left; background: rgba(255,255,255,0.12);
+    border-radius: 10px; padding: 16px 18px; margin-bottom: 18px;
+  }
+  .ending-point {
+    font-size: 14px; line-height: 1.8; padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+  .ending-point:last-child { border-bottom: none; }
+  .ending-point::before { content: '✦'; color: var(--yellow); margin-right: 8px; font-size: 12px; }
+  .ending-msg {
+    background: rgba(255,255,255,0.12); border-radius: 10px;
+    padding: 16px 18px; margin-bottom: 16px;
+    font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.92);
+    border-left: 4px solid var(--yellow);
+  }
+  .restart-btn {
+    background: transparent; color: var(--yellow);
+    border: 2px solid var(--yellow); border-radius: 10px;
+    padding: 12px 28px; font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    margin-top: 10px; transition: all 0.15s;
+  }
+  .restart-btn:hover { background: var(--yellow); color: var(--text); }
+
+  
+
+  /* ── 用語解説ポップアップ ── */
+  .g-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(100,100,100,0.25); color: #fff;
+    font-size: 11px; font-weight: 900; cursor: pointer;
+    border: none; font-family: inherit;
+    margin-left: 3px; vertical-align: middle; flex-shrink: 0;
+    transition: background 0.15s; line-height: 1; padding: 0;
+  }
+  .g-btn:hover { background: rgba(0,0,0,0.5); }
+  .g-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .g-overlay.open { opacity: 1; pointer-events: all; }
+  .g-card {
+    background: #fff; border-radius: 16px; padding: 22px 20px;
+    max-width: 380px; width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    transform: translateY(10px); transition: transform 0.2s;
+  }
+  .g-overlay.open .g-card { transform: translateY(0); }
+  .g-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .g-term { font-size: 17px; font-weight: 900; color: #1a2030; }
+  .g-close {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #f0f0f0; border: none; cursor: pointer;
+    font-size: 14px; color: #666; display: flex; align-items: center; justify-content: center;
+  }
+  .g-def { font-size: 14px; line-height: 1.85; color: #2a2a2a; }
+  .g-foot { margin-top: 16px; text-align: center; }
+  .g-ok {
+    color: #fff; border: none; border-radius: 8px;
+    padding: 10px 28px; font-family: inherit;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .feedback-box, .ai-box, .ending-card { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-ep">EP.5</span>
+  <span class="header-title">老後の準備と人生最大の支出ラッシュ</span>
+</div>
+<div class="progress-wrap">
+  <div class="progress-bar" id="progressBar" style="width:0%"></div>
+</div>
+
+<div class="container">
+
+  <!-- シーン導入 -->
+  <div class="scene-card">
+    <div class="scene-tag">EPISODE 5 ― FINAL SCENE</div>
+    <div class="scene-title">四重苦——<br>蓮に請求書が届いた。</div>
+    <div class="scene-body">45歳になった蓮。子どもは高1と中2。住宅ローンは残り15年。父親が要介護になり始め、毎月の費用が発生し始めた。そして気づく——「老後の準備、ほとんどできていない」と。</div>
+    <div class="character-info">
+      <div class="character-avatar">👨</div>
+      <div class="character-detail">
+        <strong>中村 蓮（45歳）・社会人23年目</strong>
+        妻・子ども2人（高1・中2）・年収約650万円<br>
+        住宅ローン残り15年・父親が要介護に
+      </div>
+    </div>
+  </div>
+
+  <!-- 支出ラッシュ可視化 -->
+  <div class="question-card">
+    <div class="q-step" style="margin-bottom:12px;">蓮に今、同時にのしかかっている支出</div>
+    <div class="rush-grid">
+      <div class="rush-item edu">
+        <div class="rush-icon">🎓</div>
+        <div class="rush-label">教育費</div>
+        <div class="rush-amount">月6〜8万円</div>
+        <div class="rush-sub">塾・大学受験・入学金</div>
+      </div>
+      <div class="rush-item loan">
+        <div class="rush-icon">🏠</div>
+        <div class="rush-label">住宅ローン</div>
+        <div class="rush-amount">月9万円</div>
+        <div class="rush-sub">残り15年・約1,620万円</div>
+      </div>
+      <div class="rush-item care">
+        <div class="rush-icon">👴</div>
+        <div class="rush-label">親の介護費</div>
+        <div class="rush-amount">月3〜5万円</div>
+        <div class="rush-sub">施設・ヘルパー・交通費</div>
+      </div>
+      <div class="rush-item retire">
+        <div class="rush-icon">🌅</div>
+        <div class="rush-label">老後資金</div>
+        <div class="rush-amount">まだ不足</div>
+        <div class="rush-sub">65歳まであと20年</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q1：優先順位（共通） -->
+  <div class="question-card" id="q1Card">
+    <div class="q-step">STEP 1 / 6</div>
+    <div class="route-badge common">🌐 全体の考え方</div>
+    <div class="q-label reason">考え方を選ぶ</div>
+    <div class="q-text">4つの支出が重なる今、蓮が最初に取るべき行動はどれ？</div>
+    <div class="q-sub">「最も先にすべき行動」と「最も後回しにしがち・的外れ」を1つずつ選んでください</div>
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も先にすべき</div>
+      <div class="dual-badge worst">💨 後回しにしがち</div>
+    </div>
+    <div class="dual-options">
+      <div class="dual-option">
+        <div class="dual-option-text">4つの支出を全部書き出して、毎月の収支と残り期間を「見える化」する</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',0)" id="q1b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',0)" id="q1w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">子どもの教育費を最優先にして、老後のことは子どもが独立してから考える</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',1)" id="q1b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',1)" id="q1w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">住宅ローンを早く返すことで気持ちが楽になるので、繰り上げ返済<button class="g-btn" onclick="gShow('繰り上げ返済')">?</button>を最優先にする</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',2)" id="q1b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',2)" id="q1w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">どれも重要だからと手をつけられずに、現状維持のまま月日が過ぎていく</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',3)" id="q1b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',3)" id="q1w3">💨</button>
+        </div>
+      </div>
+    </div>
+    <button class="confirm-btn" id="q1Confirm" onclick="confirmQ1()">この選択で決定する</button>
+    <div class="feedback-box" id="q1Feedback">
+      <div class="feedback-head"><div class="feedback-icon">💡</div><div class="feedback-label">解説</div></div>
+      <div class="feedback-text" id="q1FeedbackText"></div>
+      <div class="feedback-hl" id="q1Hl"></div>
+    </div>
+    <div class="ai-box" id="q1AI">
+      <div class="ai-head"><div class="ai-icon">🤖</div><div class="ai-label">FPからのひとこと</div></div>
+      <div class="ai-text" id="q1AIText"><div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div></div>
+    </div>
+    <button class="next-btn" id="q1Next" onclick="showQ2()">次の問題へ →</button>
+  </div>
+
+  <!-- Q2：教育費 -->
+  <div class="question-card" id="q2Card" style="display:none">
+    <div class="q-step">STEP 2 / 6</div>
+    <div class="route-badge edu">🎓 教育費</div>
+    <div class="q-label reason">考え方を選ぶ</div>
+    <div class="q-text">子ども2人が大学進学を希望。教育費とローンが重なるとき、最も大切な考え方はどれ？</div>
+    <div class="q-sub">「最も大切」と「最も関係ない」を1つずつ選んでください</div>
+    <div class="info-box amber">
+      <strong>📌 教育費の目安</strong><br>
+      私立大学文系4年間：約500万円／人<br>
+      子ども2人なら最大1,000万円。これが住宅ローン返済期間中に重なる。
+    </div>
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も大切</div>
+      <div class="dual-badge worst">💨 最も関係ない</div>
+    </div>
+    <div class="dual-options">
+      <div class="dual-option">
+        <div class="dual-option-text">子どもが望む進路を全力で支援する。お金のことは何とかなる</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(2,'best',0)" id="q2b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(2,'worst',0)" id="q2w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">いつ・いくら必要かを逆算して、今から準備できる金額を把握する</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(2,'best',1)" id="q2b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(2,'worst',1)" id="q2w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">奨学金は子どもの借金になるので絶対使わず、親が全額用意する</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(2,'best',2)" id="q2b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(2,'worst',2)" id="q2w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">子ども自身に進学の目的とお金の現実を理解させた上で、家族で一緒に考える</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(2,'best',3)" id="q2b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(2,'worst',3)" id="q2w3">💨</button>
+        </div>
+      </div>
+    </div>
+    <button class="confirm-btn" id="q2Confirm" onclick="confirmQ2()">この選択で決定する</button>
+    <div class="feedback-box amber" id="q2Feedback">
+      <div class="feedback-head"><div class="feedback-icon amber">💡</div><div class="feedback-label amber">解説</div></div>
+      <div class="feedback-text" id="q2FeedbackText"></div>
+      <div class="feedback-hl amber" id="q2Hl"></div>
+    </div>
+    <div class="ai-box" id="q2AI">
+      <div class="ai-head"><div class="ai-icon">🤖</div><div class="ai-label">FPからのひとこと</div></div>
+      <div class="ai-text" id="q2AIText"><div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div></div>
+    </div>
+    <button class="next-btn" id="q2Next" onclick="showQ3()">次の問題へ →</button>
+  </div>
+
+  <!-- Q3：住宅ローン -->
+  <div class="question-card" id="q3Card" style="display:none">
+    <div class="q-step">STEP 3 / 6</div>
+    <div class="route-badge loan">🏠 住宅ローン</div>
+    <div class="q-label reason">考え方を選ぶ</div>
+    <div class="q-text">繰り上げ返済で早くローンを終わらせるか、老後資金の積み立てを続けるか。最も大切な考え方はどれ？</div>
+    <div class="q-sub">「最も大切な視点」と「最も関係ない視点」を1つずつ選んでください</div>
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も大切な視点</div>
+      <div class="dual-badge worst">💨 最も関係ない視点</div>
+    </div>
+    <div class="dual-options">
+      <div class="dual-option">
+        <div class="dual-option-text">ローン金利と運用利回りを比較して、数字で有利な方を選ぶ</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',0)" id="q3b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',0)" id="q3w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">ローンという借金がある限り精神的に不安なので、とにかく早く返す</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',1)" id="q3b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',1)" id="q3w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">老後資金は65歳まで20年ある。繰り上げ返済を終えてから積み立て始めても間に合う</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',2)" id="q3b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',2)" id="q3w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">繰り上げ返済<button class="g-btn" onclick="gShow('繰り上げ返済')">?</button>と老後積み立てを並行させ、キャッシュフロー<button class="g-btn" onclick="gShow('キャッシュフロー')">?</button>が崩れない範囲で両立する</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',3)" id="q3b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',3)" id="q3w3">💨</button>
+        </div>
+      </div>
+    </div>
+    <button class="confirm-btn" id="q3Confirm" onclick="confirmQ3()">この選択で決定する</button>
+    <div class="feedback-box" id="q3Feedback">
+      <div class="feedback-head"><div class="feedback-icon">💡</div><div class="feedback-label">解説</div></div>
+      <div class="feedback-text" id="q3FeedbackText"></div>
+      <div class="feedback-hl" id="q3Hl"></div>
+    </div>
+    <div class="ai-box" id="q3AI">
+      <div class="ai-head"><div class="ai-icon">🤖</div><div class="ai-label">FPからのひとこと</div></div>
+      <div class="ai-text" id="q3AIText"><div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div></div>
+    </div>
+    <button class="next-btn" id="q3Next" onclick="showQ4()">次の問題へ →</button>
+  </div>
+
+  <!-- Q4：親の介護 -->
+  <div class="question-card" id="q4Card" style="display:none">
+    <div class="q-step">STEP 4 / 6</div>
+    <div class="route-badge care">👴 親の介護</div>
+    <div class="q-label reason">考え方を選ぶ</div>
+    <div class="q-text">父親の介護が必要になった。費用と自分の生活を守るために最も大切な考え方はどれ？</div>
+    <div class="q-sub">「最も大切」と「最も関係ない」を1つずつ選んでください</div>
+    <div class="info-box coral">
+      <strong>📌 介護のリアル</strong><br>
+      介護期間の平均は約5年。月の費用は在宅で約5万円・施設で約12万円。介護離職すると自分の収入・年金・キャリアを失うリスクがある。
+    </div>
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も大切</div>
+      <div class="dual-badge worst">💨 最も関係ない</div>
+    </div>
+    <div class="dual-options">
+      <div class="dual-option">
+        <div class="dual-option-text">親のためなら仕事を辞めても介護に専念すべき。それが親孝行だ</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',0)" id="q4b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',0)" id="q4w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">介護保険<button class="g-btn" onclick="gShow('介護保険')">?</button>・公的サービスを最大限活用して、自分の収入とキャリアを守りながら支える</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',1)" id="q4b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',1)" id="q4w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">親の介護費用は親自身の貯蓄や年金でまかなうのが原則で、子どもが負担する必要はない</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',2)" id="q4b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',2)" id="q4w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">兄弟・親族と費用と役割を分担し、一人で抱え込まない体制を作る</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',3)" id="q4b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',3)" id="q4w3">💨</button>
+        </div>
+      </div>
+    </div>
+    <button class="confirm-btn" id="q4Confirm" onclick="confirmQ4()">この選択で決定する</button>
+    <div class="feedback-box coral" id="q4Feedback">
+      <div class="feedback-head"><div class="feedback-icon coral">💡</div><div class="feedback-label coral">解説</div></div>
+      <div class="feedback-text" id="q4FeedbackText"></div>
+      <div class="feedback-hl coral" id="q4Hl"></div>
+    </div>
+    <div class="ai-box" id="q4AI">
+      <div class="ai-head"><div class="ai-icon">🤖</div><div class="ai-label">FPからのひとこと</div></div>
+      <div class="ai-text" id="q4AIText"><div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div></div>
+    </div>
+    <button class="next-btn" id="q4Next" onclick="showQ5()">次の問題へ →</button>
+  </div>
+
+  <!-- Q5：老後資金 -->
+  <div class="question-card" id="q5Card" style="display:none">
+    <div class="q-step">STEP 5 / 6</div>
+    <div class="route-badge retire">🌅 老後資金</div>
+    <div class="q-label reason">考え方を選ぶ</div>
+    <div class="q-text">蓮が65歳で退職するまで20年。老後資金について最も大切な考え方はどれ？</div>
+    <div class="q-sub">「最も大切な視点」と「最も関係ない視点」を1つずつ選んでください</div>
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も大切な視点</div>
+      <div class="dual-badge worst">💨 最も関係ない視点</div>
+    </div>
+    <div class="dual-options">
+      <div class="dual-option">
+        <div class="dual-option-text">公的年金<button class="g-btn" onclick="gShow('公的年金')">?</button>だけでは足りない分を「いくら・いつまでに」積み上げるかを逆算して今すぐ動く</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(5,'best',0)" id="q5b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(5,'worst',0)" id="q5w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">退職金<button class="g-btn" onclick="gShow('退職金')">?</button>があるから老後は何とかなる。今は目の前の支出を乗り越えることが先決だ</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(5,'best',1)" id="q5b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(5,'worst',1)" id="q5w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">少額でもiDeCo<button class="g-btn" onclick="gShow('iDeCo')">?</button>やNISA<button class="g-btn" onclick="gShow('NISA')">?</button>で積み立てを続ける。20年間止めないことが最大の戦略だ</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(5,'best',2)" id="q5b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(5,'worst',2)" id="q5w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">老後は節約すればどうにでもなる。今の生活水準を下げてでも貯蓄を増やす</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(5,'best',3)" id="q5b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(5,'worst',3)" id="q5w3">💨</button>
+        </div>
+      </div>
+    </div>
+    <button class="confirm-btn" id="q5Confirm" onclick="confirmQ5()">この選択で決定する</button>
+    <div class="feedback-box teal" id="q5Feedback">
+      <div class="feedback-head"><div class="feedback-icon teal">💡</div><div class="feedback-label teal">解説</div></div>
+      <div class="feedback-text" id="q5FeedbackText"></div>
+      <div class="feedback-hl teal" id="q5Hl"></div>
+    </div>
+    <div class="ai-box" id="q5AI">
+      <div class="ai-head"><div class="ai-icon">🤖</div><div class="ai-label">FPからのひとこと</div></div>
+      <div class="ai-text" id="q5AIText"><div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div></div>
+    </div>
+    <button class="next-btn" id="q5Next" onclick="showQ6()">次の問題へ →</button>
+  </div>
+
+  <!-- Q6：30代に戻れたら（共通・締め） -->
+  <div class="question-card" id="q6Card" style="display:none">
+    <div class="q-step">STEP 6 / 6</div>
+    <div class="route-badge common">🌐 このゲームの締めくくり</div>
+    <div class="q-label reason">考え方を選ぶ</div>
+    <div class="q-text">45歳の蓮が「30代の自分に一番伝えたいこと」として最も本質的なものはどれ？</div>
+    <div class="q-sub">「最も伝えたいこと」と「最も関係ないこと」を1つずつ選んでください</div>
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も伝えたいこと</div>
+      <div class="dual-badge worst">💨 最も関係ないこと</div>
+    </div>
+    <div class="dual-options">
+      <div class="dual-option">
+        <div class="dual-option-text">「老後・介護・教育費が同時に来る日のために、30代のうちから少しずつ準備しておけ」</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(6,'best',0)" id="q6b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(6,'worst',0)" id="q6w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">「もっと稼げる仕事に転職して、収入を上げることを最優先にしろ」</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(6,'best',1)" id="q6b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(6,'worst',1)" id="q6w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">「お金の使い方に『何のために』という目的を持て。目的のない消費は未来を食いつぶす」</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(6,'best',2)" id="q6b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(6,'worst',2)" id="q6w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">「子どもが生まれたらすぐに教育費の積み立てを始めろ。一番後回しにしてはいけないのがこれだ」</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(6,'best',3)" id="q6b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(6,'worst',3)" id="q6w3">💨</button>
+        </div>
+      </div>
+    </div>
+    <button class="confirm-btn" id="q6Confirm" onclick="confirmQ6()">この選択で決定する</button>
+    <div class="feedback-box common" id="q6Feedback">
+      <div class="feedback-head"><div class="feedback-icon common">💡</div><div class="feedback-label common">解説</div></div>
+      <div class="feedback-text" id="q6FeedbackText"></div>
+      <div class="feedback-hl common" id="q6Hl"></div>
+    </div>
+    <div class="ai-box" id="q6AI">
+      <div class="ai-head"><div class="ai-icon">🤖</div><div class="ai-label">FPからのひとこと</div></div>
+      <div class="ai-text" id="q6AIText"><div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div></div>
+    </div>
+    <button class="next-btn" id="q6Next" onclick="showEnding()">全エピソード完了 →</button>
+  </div>
+
+  <!-- エンディング -->
+  <div class="ending-card" id="endingCard">
+    <div class="ending-badge">🎉 全エピソード クリア！</div>
+    <div class="ending-title">蓮の人生から学んだ<br>お金の真実</div>
+    <div class="ending-points">
+      <div class="ending-point">40代後半は教育費・ローン・介護・老後が同時に押し寄せる「四重苦」の時期</div>
+      <div class="ending-point">繰り上げ返済と老後積み立ては並行させる。「終わってから始める」では遅い</div>
+      <div class="ending-point">介護離職は自分のキャリアと年金を失う。公的サービスと家族で分担する</div>
+      <div class="ending-point">子どもにも「お金の現実」を伝える。一緒に考えることが最大の金融教育だ</div>
+    </div>
+    <div class="ending-msg">
+      このゲームをここまでプレイしたあなたへ。<br><br>
+      バイト・進路・仕事・結婚・老後——蓮の人生を通じて、お金は「稼ぐ・使う・備える」という流れで動いていることを感じてもらえましたか？<br><br>
+      「何のために」を問い続けることが、どの年代でも共通するお金の答えです。
+    </div>
+    <button class="restart-btn" onclick="restartGame()">もう一度やってみる</button>
+  </div>
+
+</div>
+
+<script>
+
+const GLOS = {
+  'トレードオフ': '何かを得るために、別の何かを手放すこと。「時給が高い仕事を選んだら移動時間が増えた」など、得るものと失うものが必ずセットになっている状態のこと。',
+  '手取り': '給料から税金・社会保険料などが引かれた後、実際に受け取れる金額のこと。バイトの場合は年収103万円以下なら所得税はかからない。',
+  '生涯収入': '生まれてから引退するまでに稼ぐ収入の合計。高卒と大卒で平均3,000〜5,000万円の差があると言われるが、離職・転職・仕事の質によって大きく変わる。',
+  '奨学金': '大学などの学費を借りるお金。日本では多くが「貸与型（返済が必要）」で、卒業後に毎月返済が始まる。返済不要の「給付型」もある。',
+  '4象限マトリクス': '「やりたい・やりたくない」と「できる・できない」の2軸で物事を4つのエリアに分けて整理する考え方。仕事選びでは「できる×やりたい」の象限が最も強みになる。',
+  'インターンシップ': '学生が就職前に企業で実際に働く体験プログラム。短期（1〜5日）と長期（1ヶ月以上）があり、採用選考につながることも多い。',
+  '自己PR': '就活で「自分にはこんな能力・経験がある」と企業にアピールすること。「何をしたか」ではなく「なぜやったか・何を学んだか」を語ることが重要。',
+  'キャッシュフロー': '毎月のお金の流れのこと。収入から支出を引いた残りがプラスなら黒字、マイナスなら赤字。家計管理の基本はこのキャッシュフローを把握することから始まる。',
+  '厚生年金': '会社員が加入する年金。給料から天引きされ、会社も同額を負担する。国民年金より受取額が多く、退職すると加入できなくなる。',
+  '就業不能保険': '病気やケガで長期間働けなくなったとき、毎月一定額を受け取れる保険。特に独身など収入が途絶えたときに助けてくれる人がいない場合に重要。',
+  'NISA': '少額投資非課税制度。通常、投資で得た利益には約20%の税金がかかるが、NISAを使うと非課税になる。2024年から新NISAになり、年間投資上限が大幅に拡大した。',
+  'iDeCo': '個人型確定拠出年金。老後のために毎月積み立てる制度で、掛金が全額所得控除になるため節税効果が高い。60歳まで引き出せない代わりに、税制上の優遇が大きい。',
+  '生命保険': '死亡したとき、残された家族にお金が支払われる保険。独身で扶養家族がいない場合は優先度が低く、医療保険や就業不能保険の方が重要なことが多い。',
+  '介護保険': '40歳から強制加入する公的保険。介護が必要になった場合、ヘルパー・デイサービス・施設入所などのサービスを1〜3割の自己負担で使える。',
+  '繰り上げ返済': '住宅ローンなどを予定より早く多く返済すること。利息の支払いを減らせるが手元の現金が減るため、老後資金や緊急予備資金とのバランスが重要。',
+  '退職金': '会社を退職するときに支給されるお金。長年勤めるほど多くなる傾向があるが、近年は制度がない企業も増えており、金額は会社次第。',
+  '公的年金': '国が運営する老後の収入保障制度。国民年金（全員加入）と厚生年金（会社員加入）がある。受給額は加入期間や収入によって異なる。'
+};
+function gShow(term) {
+  var d = GLOS[term]; if (!d) return;
+  document.getElementById('gTerm').textContent = term;
+  document.getElementById('gDef').textContent = d;
+  document.getElementById('gOverlay').classList.add('open');
+}
+function gClose() { document.getElementById('gOverlay').classList.remove('open'); }
+
+
+let dualState = {};
+let sampleFn = null;
+
+(async () => {
+  try { sampleFn = await claude.use('sample'); } catch(e) { sampleFn = null; }
+})();
+
+function setProgress(v) { document.getElementById('progressBar').style.width = v + '%'; }
+
+function dualSelect(q, type, idx) {
+  if (!dualState[q]) dualState[q] = { best: null, worst: null };
+  const s = dualState[q];
+  const other = type === 'best' ? 'worst' : 'best';
+  if (s[type] === idx) { s[type] = null; }
+  else { if (s[other] === idx) s[other] = null; s[type] = idx; }
+  renderDual(q);
+  const btn = document.getElementById('q' + q + 'Confirm');
+  if (btn) btn.className = 'confirm-btn' + (s.best !== null && s.worst !== null ? ' show' : '');
+}
+function renderDual(q) {
+  const s = dualState[q] || {};
+  for (let i = 0; i < 4; i++) {
+    const bb = document.getElementById('q'+q+'b'+i);
+    const wb = document.getElementById('q'+q+'w'+i);
+    if (bb) bb.className = 'dual-btn best-btn'  + (s.best  === i ? ' active' : '');
+    if (wb) wb.className = 'dual-btn worst-btn' + (s.worst === i ? ' active' : '');
+  }
+}
+function lockDual(q) {
+  for (let i = 0; i < 4; i++) {
+    const bb = document.getElementById('q'+q+'b'+i);
+    const wb = document.getElementById('q'+q+'w'+i);
+    if (bb) bb.disabled = true;
+    if (wb) wb.disabled = true;
+  }
+}
+
+function doConfirm(q, txt, hl, fbClass, iconClass, labelClass, hlClass, progress, aiPrompt) {
+  lockDual(q);
+  document.getElementById('q'+q+'Confirm').style.display = 'none';
+  document.getElementById('q'+q+'FeedbackText').textContent = txt;
+  document.getElementById('q'+q+'Hl').textContent = hl;
+  const fb = document.getElementById('q'+q+'Feedback');
+  fb.className = 'feedback-box show' + (fbClass ? ' '+fbClass : '');
+  setProgress(progress);
+  callAI('q'+q, aiPrompt);
+  document.getElementById('q'+q+'Next').classList.add('show');
+}
+
+// ── Q1 ──
+function confirmQ1() {
+  const s = dualState[1];
+  const bestGood  = s.best === 0;
+  const worstGood = s.worst === 3;
+  const txt = bestGood
+    ? '完璧です！支出が重なるとき、最初にすべきことは「見える化」です。感情で動く前に、全体像を数字で把握することで初めて優先順位が決まります。'
+    : '4つの支出が重なるとき、最初にすべきことは「全部書き出して見える化する」ことです。どれか1つを感情で優先するより、全体のキャッシュフローを把握することが出発点です。';
+  const hl = '「見える化」なき家計管理は、地図なしの旅と同じ。まず現状を数字で把握することが、すべての判断の前提になります。';
+  doConfirm(1, txt, hl, '', '', '', '', 16,
+    `あなたは1級FPの金融教育講師。社会人とその家族向けです。四重苦の優先順位クイズで・最も先にすべき：「${['全支出を見える化','教育費最優先で老後は後回し','繰り上げ返済を最優先','現状維持のまま'][s.best]}」を選びました。「家計の見える化が全ての出発点」というテーマで温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`);
+}
+function showQ2() {
+  document.getElementById('q2Card').style.display = 'block';
+  document.getElementById('q2Card').scrollIntoView({ behavior:'smooth', block:'start' });
+  setProgress(28);
+}
+
+// ── Q2 ──
+function confirmQ2() {
+  const s = dualState[2];
+  const bestGood = s.best === 1 || s.best === 3;
+  const worstGood = s.worst === 0;
+  const txt = bestGood && worstGood
+    ? '素晴らしい視点です！教育費は「いつ・いくら必要か」を逆算して準備するもの。そして子ども自身にお金の現実を伝えることは、このゲームのEP.2でさくらが学んだ「何のために進学するか」にもつながります。'
+    : '「何とかなる」は最も危険な発想です。子ども2人の大学費用は最大1,000万円。これを感情で乗り越えようとすると、老後資金を崩すことになります。逆算と家族での話し合いが大切です。';
+  const hl = '教育費は「愛情」で決めてはいけない唯一のお金。いくら出せるかを先に決め、その範囲で最善を選ぶことが家族全体を守ります。';
+  doConfirm(2, txt, hl, 'amber', 'amber', 'amber', 'amber', 36,
+    `あなたは1級FPの金融教育講師。社会人とその家族向けです。教育費の考え方クイズで・最も大切：「${['子どもの希望を全力支援','いついくら必要か逆算','奨学金は絶対使わない','子どもと一緒に考える'][s.best]}」を選びました。「教育費は感情ではなく数字で決める」というテーマで温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`);
+}
+function showQ3() {
+  document.getElementById('q3Card').style.display = 'block';
+  document.getElementById('q3Card').scrollIntoView({ behavior:'smooth', block:'start' });
+  setProgress(44);
+}
+
+// ── Q3 ──
+function confirmQ3() {
+  const s = dualState[3];
+  const bestGood = s.best === 0 || s.best === 3;
+  const worstGood = s.worst === 2;
+  const txt = bestGood && worstGood
+    ? '鋭いです！繰り上げ返済か老後積み立てかは「感情」ではなく「金利と利回りの比較」で決めます。そして両立できる範囲で並行させることが、どちらも犠牲にしない現実的な答えです。'
+    : '「繰り上げ返済を終えてから老後準備」は危険な先送りです。45歳から10年後に老後積み立てを始めても、時間が足りません。低金利のローンなら並行積み立てが数字的に有利なことが多いです。';
+  const hl = '住宅ローン金利1%と資産運用利回り3〜5%を比べれば、数字は答えを出してくれます。感情ではなく計算で判断しましょう。';
+  doConfirm(3, txt, hl, '', '', '', '', 52,
+    `あなたは1級FPの金融教育講師。社会人とその家族向けです。繰り上げ返済vs老後積み立てクイズで・最も大切：「${['金利と利回りを数字で比較','とにかく早く返す','繰り上げ完済後に積み立て','並行させてキャッシュフローを守る'][s.best]}」を選びました。「感情ではなく数字で判断する」というテーマで温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`);
+}
+function showQ4() {
+  document.getElementById('q4Card').style.display = 'block';
+  document.getElementById('q4Card').scrollIntoView({ behavior:'smooth', block:'start' });
+  setProgress(60);
+}
+
+// ── Q4 ──
+function confirmQ4() {
+  const s = dualState[4];
+  const bestGood = s.best === 1 || s.best === 3;
+  const worstGood = s.worst === 0;
+  const txt = bestGood && worstGood
+    ? '完璧です！介護は「愛情で乗り越えるもの」という昭和的価値観が介護離職を生みます。公的サービスをフル活用し、家族で分担することが自分のキャリアと収入を守りながら親を支える現実的な答えです。'
+    : '介護離職は美談のように見えますが、自分の収入・厚生年金・キャリアを失い、最終的には介護される親も困ることになります。介護保険・公的サービスの活用と家族での役割分担が鉄則です。';
+  const hl = '介護は一人で抱え込むと共倒れになる。公的サービス・兄弟・地域資源をフル活用して、自分の生活を守りながら支えることが「長く続けられる介護」の条件です。';
+  doConfirm(4, txt, hl, 'coral', 'coral', 'coral', 'coral', 68,
+    `あなたは1級FPの金融教育講師。社会人とその家族向けです。介護とお金のクイズで・最も大切：「${['仕事を辞めて介護専念','公的サービスを活用しキャリアを守る','親の費用は親が負担','兄弟で分担して一人で抱えない'][s.best]}」を選びました。「介護離職を避けて自分も守る」というテーマで温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`);
+}
+function showQ5() {
+  document.getElementById('q5Card').style.display = 'block';
+  document.getElementById('q5Card').scrollIntoView({ behavior:'smooth', block:'start' });
+  setProgress(76);
+}
+
+// ── Q5 ──
+function confirmQ5() {
+  const s = dualState[5];
+  const bestGood = s.best === 0 || s.best === 2;
+  const worstGood = s.worst === 1 || s.worst === 3;
+  const txt = bestGood && worstGood
+    ? '素晴らしい！老後資金は「逆算して今すぐ動く」と「少額でも止めない」の組み合わせが最強です。退職金は会社の都合で変わる。年金だけでは足りない。だからこそ自分で積み上げる20年が重要です。'
+    : '「退職金があるから何とかなる」は過去の話です。退職金は減少傾向にあり、公的年金だけでは月5〜10万円不足すると言われています。45歳からでも遅くはない。今すぐ少額でも始めることが大切です。';
+  const hl = '老後に必要な不足額は夫婦で2,000万円以上とも言われる。これを20年で積み上げるには、月8万円以上の積み立てが必要。今すぐ始める理由がここにあります。';
+  doConfirm(5, txt, hl, 'teal', 'teal', 'teal', 'teal', 84,
+    `あなたは1級FPの金融教育講師。社会人とその家族向けです。老後資金クイズで・最も大切：「${['逆算して今すぐ動く','退職金があるから大丈夫','少額でも止めずに続ける','節約して貯蓄を増やす'][s.best]}」を選びました。「45歳からでも遅くない老後準備」というテーマで温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`);
+}
+function showQ6() {
+  document.getElementById('q6Card').style.display = 'block';
+  document.getElementById('q6Card').scrollIntoView({ behavior:'smooth', block:'start' });
+  setProgress(90);
+}
+
+// ── Q6 ──
+function confirmQ6() {
+  const s = dualState[6];
+  const bestGood = s.best === 0 || s.best === 2;
+  const worstGood = s.worst === 1;
+  const txt = bestGood && worstGood
+    ? 'このゲーム全体のメッセージに辿り着きました。「早めの準備」と「何のためにお金を使うか」という問い——これはEP.1の健太、EP.2のさくら、EP.3の蓮が学んできたことと、全て繋がっています。'
+    : '45歳の蓮が30代の自分に伝えたいのは「四重苦が来る前に準備しておくこと」と「お金の使い方に目的を持つこと」。このゲームのどのエピソードにも共通する、お金の本質的なメッセージです。';
+  const hl = 'どの年代にも共通するお金の答えは「何のために」を問い続けること。稼ぐ・使う・備える——その全てに「目的」があるとき、お金は人生の味方になります。';
+  doConfirm(6, txt, hl, 'common', 'common', 'common', 'common', 98,
+    `あなたは1級FPの金融教育講師。中高生から社会人とその家族全員向けです。「30代の自分に伝えたいこと」クイズで・最も伝えたいこと：「${['四重苦に備えて早めに準備','収入を上げることを最優先','お金の使い方に目的を持て','子どもが生まれたらすぐ教育費積み立て'][s.best]}」を選びました。このゲーム全体の締めくくりとして「何のためにお金を使うかが人生を変える」というテーマで、中高生からその親まで全員の心に刺さる温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`);
+}
+
+function showEnding() {
+  document.getElementById('endingCard').classList.add('show');
+  setProgress(100);
+  document.getElementById('endingCard').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ── AI フィードバック ──
+async function callAI(elId, prompt) {
+  const boxId = elId + 'AI'; const textId = elId + 'AIText';
+  document.getElementById(boxId).classList.add('show');
+  if (!sampleFn) {
+    await new Promise(r => setTimeout(r, 2000));
+    sampleFn = await claude.use('sample').catch(() => null);
+  }
+  if (!sampleFn) {
+    document.getElementById(textId).innerHTML = '<span class="ai-unavailable">Claudeアカウントをお持ちの方には、ここにFPからの個別コメントが表示されます。</span>';
+    return;
+  }
+  const el = document.getElementById(textId);
+  el.innerHTML = '<div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> FPが考え中…</div>';
+  try {
+    const { text } = await sampleFn(prompt, {
+      modelTier: 'quick', cache: false,
+      onText: ({ text: t }) => { el.textContent = t; }
+    });
+    el.textContent = text;
+  } catch(e) {
+    const msgs = { not_granted: 'Claudeアカウントでログインするとコメントが表示されます', rate_limited: 'しばらく待ってからもう一度お試しください' };
+    el.innerHTML = `<span class="ai-unavailable">${msgs[e.code] || 'AIフィードバックを取得できませんでした（'+(e.code||'不明')+'）'}</span>`;
+  }
+}
+
+// ── リスタート ──
+function restartGame() {
+  dualState = {};
+  setProgress(0);
+  ['q2Card','q3Card','q4Card','q5Card','q6Card'].forEach(id => document.getElementById(id).style.display = 'none');
+  for(let q=1;q<=6;q++){
+    ['Feedback','AI'].forEach(s => { const el=document.getElementById('q'+q+s); if(el) el.classList.remove('show'); });
+    const nx=document.getElementById('q'+q+'Next'); if(nx) nx.classList.remove('show');
+    for(let i=0;i<4;i++){
+      const bb=document.getElementById('q'+q+'b'+i); const wb=document.getElementById('q'+q+'w'+i);
+      if(bb){bb.className='dual-btn best-btn';bb.disabled=false;}
+      if(wb){wb.className='dual-btn worst-btn';wb.disabled=false;}
+    }
+    const cf=document.getElementById('q'+q+'Confirm');
+    if(cf){cf.className='confirm-btn';cf.style.display='';}
+  }
+  document.getElementById('endingCard').classList.remove('show');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+</script>
+
+<div class="glossary-overlay" id="glossaryOverlay" onclick="if(event.target===this)closeGlossary()">
+  <div class="glossary-card">
+    <div class="glossary-header">
+      <div class="glossary-term" id="glossaryTerm"></div>
+      <button class="glossary-close" onclick="closeGlossary()">✕</button>
+    </div>
+    <div class="glossary-def" id="glossaryDef"></div>
+    <div class="glossary-footer">
+      <button class="glossary-ok" style="background:var(--navy)" onclick="closeGlossary()">わかった！</button>
+    </div>
+  </div>
+</div>
+
+<div class="g-overlay" id="gOverlay" onclick="if(event.target===this)gClose()">
+  <div class="g-card">
+    <div class="g-head">
+      <div class="g-term" id="gTerm"></div>
+      <button class="g-close" onclick="gClose()">✕</button>
+    </div>
+    <div class="g-def" id="gDef"></div>
+    <div class="g-foot">
+      <button class="g-ok" id="gOkBtn" style="background:var(--navy)" onclick="gClose()">わかった！</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

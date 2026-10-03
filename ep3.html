@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>お金と仕事を考えるゲーム｜EP.3 仕事選びと自分の価値</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #0f8a6e;
+    --teal-light: #e6f7f2;
+    --teal-mid: #a8dece;
+    --teal-dark: #0a6652;
+    --orange: #f07030;
+    --orange-light: #fff0e6;
+    --orange-mid: #f5c0a0;
+    --orange-dark: #c05010;
+    --lemon: #fffbe6;
+    --yellow: #f0c040;
+    --yellow-dark: #c9a020;
+    --lavender: #f0eefa;
+    --purple: #7c5cbf;
+    --white: #ffffff;
+    --bg: #f2faf7;
+    --card: #ffffff;
+    --text: #1a2e28;
+    --text-soft: #6a8a80;
+    --border: #c8e8e0;
+    --correct: #0f8a6e;
+    --wrong: #e05a5a;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *, *::before, *::after { box-sizing: inherit; margin: 0; padding: 0; }
+  html, body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100%;
+    line-height: 1;
+  }
+
+  .header {
+    background: var(--teal);
+    color: var(--white);
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 12px;
+    position: sticky; top: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(15,138,110,0.2);
+  }
+  .header-ep {
+    background: var(--yellow); color: var(--text);
+    font-size: 11px; font-weight: 900;
+    padding: 4px 9px; border-radius: 4px;
+    white-space: nowrap; letter-spacing: 0.04em;
+  }
+  .header-title { font-size: 13px; font-weight: 700; line-height: 1.35; }
+
+  .progress-wrap { background: var(--teal-mid); height: 5px; }
+  .progress-bar { height: 5px; background: var(--yellow); transition: width 0.5s ease; }
+
+  .container { max-width: 600px; margin: 0 auto; padding: 22px 16px 56px; }
+
+  .scene-card {
+    background: linear-gradient(135deg, var(--teal) 0%, #2aaa88 100%);
+    color: var(--white); border-radius: 16px;
+    padding: 24px 22px; margin-bottom: 18px;
+    box-shadow: 0 4px 16px rgba(15,138,110,0.2);
+  }
+  .scene-tag { font-size: 11px; font-weight: 700; color: var(--yellow); letter-spacing: 0.08em; margin-bottom: 10px; }
+  .scene-title { font-size: 20px; font-weight: 900; line-height: 1.45; margin-bottom: 12px; }
+  .scene-body { font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.88); }
+  .character-info {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 12px 14px; margin-top: 14px;
+  }
+  .character-avatar {
+    width: 46px; height: 46px; background: var(--yellow);
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 22px; flex-shrink: 0;
+  }
+  .character-detail { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.92); }
+  .character-detail strong { display: block; font-size: 15px; color: #fff; margin-bottom: 2px; }
+
+  .question-card {
+    background: var(--card); border-radius: 14px;
+    padding: 22px 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 10px rgba(26,46,40,0.07);
+    border: 1.5px solid var(--border);
+  }
+  .q-step { font-size: 11px; font-weight: 700; color: var(--text-soft); letter-spacing: 0.06em; margin-bottom: 8px; }
+  .q-label {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 4px; margin-bottom: 10px;
+  }
+  .q-label.reason  { background: var(--lavender); color: var(--purple); border: 1px solid #c5b8ee; }
+  .q-label.matrix  { background: var(--teal-light); color: var(--teal-dark); border: 1px solid var(--teal-mid); }
+  .q-text { font-size: 16px; font-weight: 700; line-height: 1.65; margin-bottom: 6px; color: var(--text); }
+  .q-sub  { font-size: 13px; color: var(--text-soft); line-height: 1.65; margin-bottom: 16px; }
+
+  /* 4象限マトリクス */
+  .matrix-wrap {
+    margin-bottom: 18px;
+  }
+  .matrix-label-row {
+    display: flex; justify-content: center;
+    gap: 6px; margin-bottom: 6px; padding-left: 52px;
+  }
+  .matrix-col-label {
+    flex: 1; text-align: center; font-size: 12px; font-weight: 700;
+    padding: 5px; border-radius: 6px;
+  }
+  .matrix-col-label.can   { background: var(--teal-light); color: var(--teal-dark); }
+  .matrix-col-label.cannot { background: var(--orange-light); color: var(--orange-dark); }
+  .matrix-row { display: flex; align-items: stretch; gap: 6px; margin-bottom: 6px; }
+  .matrix-row-label {
+    width: 46px; flex-shrink: 0; display: flex; align-items: center;
+    justify-content: center; font-size: 12px; font-weight: 700;
+    border-radius: 6px; text-align: center; line-height: 1.4; padding: 4px;
+  }
+  .matrix-row-label.want    { background: var(--teal-light); color: var(--teal-dark); }
+  .matrix-row-label.notwant { background: var(--orange-light); color: var(--orange-dark); }
+  .matrix-cell {
+    flex: 1; border-radius: 10px; padding: 12px 10px;
+    text-align: center; border: 1.5px solid var(--border);
+    background: var(--bg);
+  }
+  .matrix-cell .cell-mark { font-size: 22px; margin-bottom: 4px; }
+  .matrix-cell .cell-label { font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.4; }
+  .matrix-cell .cell-sub   { font-size: 11px; color: var(--text-soft); margin-top: 3px; line-height: 1.4; }
+  .matrix-cell.highlight {
+    background: var(--teal-light); border-color: var(--teal);
+    box-shadow: 0 0 0 2px rgba(15,138,110,0.15);
+  }
+  .matrix-cell.mid { background: var(--lemon); border-color: var(--yellow); }
+  .matrix-cell.low { background: var(--orange-light); border-color: var(--orange-mid); }
+  .matrix-cell.min { background: #f8f0f0; border-color: #e8c0c0; }
+
+  .info-box {
+    border-radius: 10px; padding: 13px 15px; margin-bottom: 16px;
+    font-size: 13px; line-height: 1.8; color: var(--text);
+    border: 1.5px solid var(--border);
+  }
+  .info-box.teal  { background: var(--teal-light); border-color: var(--teal-mid); }
+  .info-box.teal strong { color: var(--teal-dark); }
+  .info-box.orange { background: var(--orange-light); border-color: var(--orange-mid); }
+  .info-box.orange strong { color: var(--orange-dark); }
+
+  /* デュアル選択 */
+  .dual-instructions { display: flex; gap: 8px; margin-bottom: 12px; }
+  .dual-badge {
+    flex: 1; text-align: center; font-size: 11px; font-weight: 700;
+    padding: 6px 8px; border-radius: 7px; line-height: 1.4;
+  }
+  .dual-badge.best  { background: var(--teal-light); color: var(--teal-dark); border: 1.5px solid var(--teal-mid); }
+  .dual-badge.worst { background: var(--orange-light); color: var(--orange-dark); border: 1.5px solid var(--orange-mid); }
+
+  .dual-options { display: flex; flex-direction: column; gap: 10px; }
+  .dual-option {
+    background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 13px 14px;
+    font-size: 14px; font-weight: 500; color: var(--text);
+    line-height: 1.55; display: flex; align-items: flex-start; gap: 10px;
+  }
+  .dual-option-text { flex: 1; }
+  .dual-btns { display: flex; gap: 6px; flex-shrink: 0; margin-top: 2px; }
+  .dual-btn {
+    border: none; border-radius: 6px; padding: 6px 10px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 11px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .dual-btn.best-btn  { background: var(--teal-light); color: var(--teal-dark); border: 1.5px solid var(--teal-mid); }
+  .dual-btn.worst-btn { background: var(--orange-light); color: var(--orange-dark); border: 1.5px solid var(--orange-mid); }
+  .dual-btn.best-btn.active  { background: var(--teal); color: #fff; }
+  .dual-btn.worst-btn.active { background: var(--orange); color: #fff; }
+  .dual-btn:disabled { opacity: 0.45; cursor: default; }
+
+  .confirm-btn {
+    width: 100%; background: var(--teal); color: #fff;
+    border: none; border-radius: 10px; padding: 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    margin-top: 14px; display: none; transition: background 0.15s;
+  }
+  .confirm-btn:hover { background: var(--teal-dark); }
+  .confirm-btn.show { display: block; }
+  .confirm-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .feedback-box {
+    background: var(--teal-light); border: 1.5px solid var(--teal-mid);
+    border-radius: 10px; padding: 16px 18px;
+    margin-top: 14px; display: none;
+    animation: fadeSlide 0.3s ease;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .feedback-icon {
+    width: 28px; height: 28px; background: var(--teal); color: #fff;
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 13px; flex-shrink: 0;
+  }
+  .feedback-label { font-size: 11px; font-weight: 700; color: var(--teal-dark); letter-spacing: 0.05em; }
+  .feedback-text { font-size: 14px; line-height: 1.8; color: var(--text); }
+  .feedback-hl {
+    background: var(--white); border-left: 3px solid var(--teal);
+    padding: 9px 13px; margin-top: 10px; border-radius: 0 7px 7px 0;
+    font-size: 13px; font-weight: 700; color: var(--teal-dark); line-height: 1.65;
+  }
+
+  .ai-box {
+    background: var(--lavender); border: 1.5px solid #c5b8ee;
+    border-radius: 12px; padding: 16px 18px;
+    margin-top: 14px; display: none;
+    animation: fadeSlide 0.35s ease;
+  }
+  .ai-box.show { display: block; }
+  .ai-head { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+  .ai-icon {
+    width: 30px; height: 30px; background: var(--purple); color: #fff;
+    border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-size: 15px; flex-shrink: 0;
+  }
+  .ai-label { font-size: 11px; font-weight: 700; color: var(--purple); letter-spacing: 0.04em; }
+  .ai-text { font-size: 14px; line-height: 1.85; color: var(--text); }
+  .ai-loading { display: flex; align-items: center; gap: 8px; color: var(--text-soft); font-size: 13px; }
+  .dots span {
+    display: inline-block; width: 6px; height: 6px;
+    background: var(--purple); border-radius: 50%; margin: 0 2px; opacity: 0.3;
+    animation: pulse 1.2s infinite;
+  }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+  .ai-unavailable { font-size: 12px; color: var(--text-soft); font-style: italic; }
+
+  .next-btn {
+    width: 100%; background: var(--teal); color: #fff;
+    border: none; border-radius: 10px; padding: 15px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px; font-weight: 900; cursor: pointer;
+    margin-top: 16px; display: none; transition: background 0.15s;
+  }
+  .next-btn:hover { background: var(--teal-dark); }
+  .next-btn.show { display: block; }
+
+  /* 投資タグ選択 */
+  .tag-grid {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+  }
+  .tag-btn {
+    background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 20px; padding: 8px 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px; font-weight: 500; color: var(--text);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .tag-btn:hover { border-color: var(--teal); background: var(--teal-light); }
+  .tag-btn.selected { background: var(--teal); color: #fff; border-color: var(--teal); }
+  .tag-btn:disabled { opacity: 0.5; cursor: default; }
+  .tag-submit {
+    width: 100%; background: var(--yellow); color: var(--text);
+    border: none; border-radius: 10px; padding: 13px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px; font-weight: 900; cursor: pointer;
+    display: none; transition: background 0.15s; margin-top: 4px;
+  }
+  .tag-submit:hover { background: var(--yellow-dark); color: #fff; }
+  .tag-submit.show { display: block; }
+  .tag-submit:disabled { opacity: 0.5; cursor: default; }
+  .tag-note { font-size: 12px; color: var(--text-soft); margin-bottom: 10px; }
+
+  /* 結果タグ表示 */
+  .tag-result {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
+  }
+  .tag-result-item {
+    font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 14px;
+  }
+  .tag-result-item.hit  { background: var(--teal-light); color: var(--teal-dark); border: 1px solid var(--teal-mid); }
+  .tag-result-item.miss { background: var(--orange-light); color: var(--orange-dark); border: 1px solid var(--orange-mid); }
+
+  .ending-card {
+    background: linear-gradient(135deg, var(--teal) 0%, #2aaa88 100%);
+    color: #fff; border-radius: 16px; padding: 28px 22px;
+    text-align: center; margin-top: 20px;
+    display: none; animation: fadeSlide 0.5s ease;
+    box-shadow: 0 4px 16px rgba(15,138,110,0.25);
+  }
+  .ending-card.show { display: block; }
+  .ending-badge {
+    display: inline-block; background: var(--yellow); color: var(--text);
+    font-size: 12px; font-weight: 900; padding: 5px 16px;
+    border-radius: 20px; margin-bottom: 16px;
+  }
+  .ending-title { font-size: 22px; font-weight: 900; line-height: 1.45; margin-bottom: 18px; }
+  .ending-points {
+    text-align: left; background: rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 16px 18px; margin-bottom: 18px;
+  }
+  .ending-point {
+    font-size: 14px; line-height: 1.8; padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+  .ending-point:last-child { border-bottom: none; }
+  .ending-point::before { content: '✦'; color: var(--yellow); margin-right: 8px; font-size: 12px; }
+  .ending-next { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 8px; }
+  .restart-btn {
+    background: transparent; color: var(--yellow);
+    border: 2px solid var(--yellow); border-radius: 10px;
+    padding: 12px 28px; font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    margin-top: 18px; transition: all 0.15s;
+  }
+  .restart-btn:hover { background: var(--yellow); color: var(--text); }
+
+  
+
+  /* ── 用語解説ポップアップ ── */
+  .g-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(100,100,100,0.25); color: #fff;
+    font-size: 11px; font-weight: 900; cursor: pointer;
+    border: none; font-family: inherit;
+    margin-left: 3px; vertical-align: middle; flex-shrink: 0;
+    transition: background 0.15s; line-height: 1; padding: 0;
+  }
+  .g-btn:hover { background: rgba(0,0,0,0.5); }
+  .g-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .g-overlay.open { opacity: 1; pointer-events: all; }
+  .g-card {
+    background: #fff; border-radius: 16px; padding: 22px 20px;
+    max-width: 380px; width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    transform: translateY(10px); transition: transform 0.2s;
+  }
+  .g-overlay.open .g-card { transform: translateY(0); }
+  .g-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .g-term { font-size: 17px; font-weight: 900; color: #1a2030; }
+  .g-close {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #f0f0f0; border: none; cursor: pointer;
+    font-size: 14px; color: #666; display: flex; align-items: center; justify-content: center;
+  }
+  .g-def { font-size: 14px; line-height: 1.85; color: #2a2a2a; }
+  .g-foot { margin-top: 16px; text-align: center; }
+  .g-ok {
+    color: #fff; border: none; border-radius: 8px;
+    padding: 10px 28px; font-family: inherit;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .feedback-box, .ai-box, .ending-card { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-ep">EP.3</span>
+  <span class="header-title">仕事選びと自分の価値を上げる</span>
+</div>
+<div class="progress-wrap">
+  <div class="progress-bar" id="progressBar" style="width:0%"></div>
+</div>
+
+<div class="container">
+
+  <!-- シーン導入 -->
+  <div class="scene-card">
+    <div class="scene-tag">EPISODE 3 ― SCENE</div>
+    <div class="scene-title">「やりたいこと」が<br>ないと就職できない？</div>
+    <div class="scene-body">大学3年生の夏。蓮はインターンシップ<button class="g-btn" onclick="gShow('インターンシップ')">?</button>に参加したが、自己PR<button class="g-btn" onclick="gShow('自己PR')">?</button>欄に何も書けなかった。「やりたいことを言えばいいのに、何も思い浮かばない」。でも本当に必要なのは「やりたいこと」だけだろうか？</div>
+    <div class="character-info">
+      <div class="character-avatar">👨‍💼</div>
+      <div class="character-detail">
+        <strong>中村 蓮（21歳）</strong>
+        大学3年生・夏休み・インターンシップ<button class="g-btn" onclick="gShow('インターンシップ')">?</button>参加中<br>
+        悩み：やりたい仕事が見つからない。自己PRが書けない。
+      </div>
+    </div>
+  </div>
+
+  <!-- Q1：4象限マトリクス -->
+  <div class="question-card" id="q1Card">
+    <div class="q-step">STEP 1 / 4</div>
+    <div class="q-label matrix">マトリクスで考える</div>
+    <div class="q-text">仕事選びの4象限マトリクス<button class="g-btn" onclick="gShow('4象限マトリクス')">?</button>。就活で最も強みになるのはどの象限？</div>
+    <div class="q-sub">「やりたい・やりたくない」×「できる・できない」で考えてみよう</div>
+
+    <!-- マトリクス図 -->
+    <div class="matrix-wrap">
+      <div class="matrix-label-row">
+        <div class="matrix-col-label can">できる</div>
+        <div class="matrix-col-label cannot">できない</div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-row-label want">やり<br>たい</div>
+        <div class="matrix-cell highlight">
+          <div class="cell-label">理想の仕事</div>
+          <div class="cell-sub">強みを活かせる</div>
+        </div>
+        <div class="matrix-cell low">
+          <div class="cell-label">夢の仕事</div>
+          <div class="cell-sub">今は採用されにくい</div>
+        </div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-row-label notwant">やり<br>たく<br>ない</div>
+        <div class="matrix-cell mid">
+          <div class="cell-label">安定の仕事</div>
+          <div class="cell-sub">生活は成り立つ</div>
+        </div>
+        <div class="matrix-cell min">
+          <div class="cell-label">避けるべき</div>
+          <div class="cell-sub">続かない可能性大</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-text" style="font-size:14px;margin-bottom:14px;">では、蓮が今すべき行動として最も大切な考え方はどれ？</div>
+
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も大切な考え方</div>
+      <div class="dual-badge worst">💨 最も的外れな考え方</div>
+    </div>
+
+    <div class="dual-options">
+      <div class="dual-option">
+        <div class="dual-option-text">「やりたいこと」が見つかるまで就活を待つ。焦って決めると後悔する</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',0)" id="q1b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',0)" id="q1w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">「自分に何ができるか」を整理して、◎の象限に入れる仕事を探す</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',1)" id="q1b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',1)" id="q1w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">給料が高い仕事を選べば、やりたくなくてもいずれ好きになれる</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',2)" id="q1b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',2)" id="q1w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">「できること」を今から増やす行動をして、◎の象限を広げていく</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',3)" id="q1b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',3)" id="q1w3">💨</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="confirm-btn" id="q1Confirm" onclick="confirmQ1()">この選択で決定する</button>
+
+    <div class="feedback-box" id="q1Feedback">
+      <div class="feedback-head"><div class="feedback-icon">💡</div><div class="feedback-label">解説</div></div>
+      <div class="feedback-text" id="q1FeedbackText"></div>
+      <div class="feedback-hl" id="q1Hl"></div>
+    </div>
+    <div class="ai-box" id="q1AI">
+      <div class="ai-head"><div class="ai-icon">🤖</div><div class="ai-label">FPからのひとこと</div></div>
+      <div class="ai-text" id="q1AIText"><div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div></div>
+    </div>
+    <button class="next-btn" id="q1Next" onclick="showQ2()">次の問題へ →</button>
+  </div>
+
+  <!-- Q2：「できること」を増やす投資（タグ選択） -->
+  <div class="question-card" id="q2Card" style="display:none">
+    <div class="q-step">STEP 2 / 4</div>
+    <div class="q-label matrix">自分への投資</div>
+    <div class="q-text">「できること」を増やすために大学生活でやっておくべきことはどれ？</div>
+    <div class="q-sub">企業が採用で重視する能力につながるものを選んでください（複数選択可）</div>
+
+    <div class="info-box teal">
+      <strong>📌 企業が採用で見ていること</strong><br>
+      コミュニケーション力・リーダーシップ・課題解決力・自ら問いを立てる力・臨機応変な対応力・継続力
+    </div>
+
+    <div class="tag-note">あなたが「大切だと思うもの」をタップして選んでください</div>
+    <div class="tag-grid" id="tagGrid">
+      <button class="tag-btn" onclick="toggleTag(this, '部活・サークルで継続力を磨く')">部活・サークル</button>
+      <button class="tag-btn" onclick="toggleTag(this, 'バイトで社会経験を積む')">アルバイト</button>
+      <button class="tag-btn" onclick="toggleTag(this, '留学・異文化体験で視野を広げる')">留学・海外体験</button>
+      <button class="tag-btn" onclick="toggleTag(this, 'ボランティアで課題解決を体験する')">ボランティア</button>
+      <button class="tag-btn" onclick="toggleTag(this, '資格・スキル習得で専門性を高める')">資格・スキル習得</button>
+      <button class="tag-btn" onclick="toggleTag(this, 'インターンで実務経験を積む')">インターンシップ</button><button class="g-btn" onclick="gShow('インターンシップ')">?</button>
+      <button class="tag-btn" onclick="toggleTag(this, 'SNSのフォロワーを増やす')">SNSのフォロワーを増やす</button>
+      <button class="tag-btn" onclick="toggleTag(this, '友達をたくさん作る')">友達をたくさん作る</button>
+      <button class="tag-btn" onclick="toggleTag(this, '読書・学習で知識を積み上げる')">読書・自主学習</button>
+      <button class="tag-btn" onclick="toggleTag(this, 'ゼミ・研究で専門知識を深める')">ゼミ・研究活動</button>
+    </div>
+    <button class="tag-submit" id="tagSubmit" onclick="submitQ2()">この選択で決定する</button>
+
+    <div class="feedback-box" id="q2Feedback">
+      <div class="feedback-head"><div class="feedback-icon">📊</div><div class="feedback-label">解説</div></div>
+      <div class="feedback-text" id="q2FeedbackText"></div>
+      <div class="tag-result" id="tagResult"></div>
+      <div class="feedback-hl" id="q2Hl"></div>
+    </div>
+    <div class="ai-box" id="q2AI">
+      <div class="ai-head"><div class="ai-icon">🤖</div><div class="ai-label">FPからのひとこと</div></div>
+      <div class="ai-text" id="q2AIText"><div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div></div>
+    </div>
+    <button class="next-btn" id="q2Next" onclick="showQ3()">次の問題へ →</button>
+  </div>
+
+  <!-- Q3：採用側の視点 -->
+  <div class="question-card" id="q3Card" style="display:none">
+    <div class="q-step">STEP 3 / 4</div>
+    <div class="q-label reason">考え方を選ぶ</div>
+    <div class="q-text">企業の採用担当者が履歴書を見るとき、最も重視している視点はどれ？</div>
+    <div class="q-sub">「最も重視されている」と「最も関係ない」を1つずつ選んでください</div>
+
+    <div class="info-box orange">
+      <strong>🏢 採用担当者の本音</strong><br>
+      「やりたいことを語る学生は多い。でも『なぜあなたでなければいけないか』を語れる学生は少ない。」
+    </div>
+
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も重視される</div>
+      <div class="dual-badge worst">💨 最も関係ない</div>
+    </div>
+
+    <div class="dual-options">
+      <div class="dual-option">
+        <div class="dual-option-text">「この仕事がやりたい」という熱意と志望動機の強さ</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',0)" id="q3b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',0)" id="q3w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">学生時代に何を経験し、そこから何を学んで今の自分があるか</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',1)" id="q3b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',1)" id="q3w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">出身大学の偏差値と学部名</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',2)" id="q3b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',2)" id="q3w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">入社後に会社の課題解決に貢献できる能力があるかどうか</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',3)" id="q3b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',3)" id="q3w3">💨</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="confirm-btn" id="q3Confirm" onclick="confirmQ3()">この選択で決定する</button>
+
+    <div class="feedback-box" id="q3Feedback">
+      <div class="feedback-head"><div class="feedback-icon">💡</div><div class="feedback-label">解説</div></div>
+      <div class="feedback-text" id="q3FeedbackText"></div>
+      <div class="feedback-hl" id="q3Hl"></div>
+    </div>
+    <div class="ai-box" id="q3AI">
+      <div class="ai-head"><div class="ai-icon">🤖</div><div class="ai-label">FPからのひとこと</div></div>
+      <div class="ai-text" id="q3AIText"><div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div></div>
+    </div>
+    <button class="next-btn" id="q3Next" onclick="showQ4()">次の問題へ →</button>
+  </div>
+
+  <!-- Q4：今から何をすべきか -->
+  <div class="question-card" id="q4Card" style="display:none">
+    <div class="q-step">STEP 4 / 4</div>
+    <div class="q-label reason">考え方を選ぶ</div>
+    <div class="q-text">蓮が今日から「自分の価値を上げる」ために最も本質的な行動はどれ？</div>
+    <div class="q-sub">「最も本質的な行動」と「最も的外れな行動」を1つずつ選んでください</div>
+
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も本質的</div>
+      <div class="dual-badge worst">💨 最も的外れ</div>
+    </div>
+
+    <div class="dual-options">
+      <div class="dual-option">
+        <div class="dual-option-text">「今の自分に何ができるか」を書き出し、足りない能力を特定して意識的に経験を積む</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',0)" id="q4b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',0)" id="q4w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">有名企業のインターンに片っ端から応募して、とにかく場数を踏む</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',1)" id="q4b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',1)" id="q4w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">就活のために資格をたくさん取る。資格があれば採用に有利になる</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',2)" id="q4b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',2)" id="q4w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">自分が「なぜそれをやったか」「そこから何を学んだか」を言語化できる経験を積む</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',3)" id="q4b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',3)" id="q4w3">💨</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="confirm-btn" id="q4Confirm" onclick="confirmQ4()">この選択で決定する</button>
+
+    <div class="feedback-box" id="q4Feedback">
+      <div class="feedback-head"><div class="feedback-icon">💡</div><div class="feedback-label">解説</div></div>
+      <div class="feedback-text" id="q4FeedbackText"></div>
+      <div class="feedback-hl" id="q4Hl"></div>
+    </div>
+    <div class="ai-box" id="q4AI">
+      <div class="ai-head"><div class="ai-icon">🤖</div><div class="ai-label">FPからのひとこと</div></div>
+      <div class="ai-text" id="q4AIText"><div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div></div>
+    </div>
+    <button class="next-btn" id="q4Next" onclick="showEnding()">結果を見る →</button>
+  </div>
+
+  <!-- エンディング -->
+  <div class="ending-card" id="endingCard">
+    <div class="ending-badge">エピソード③ クリア！</div>
+    <div class="ending-title">仕事選びで学んだ<br>3つのこと</div>
+    <div class="ending-points">
+      <div class="ending-point">「やりたいこと」より先に「できること」を整理するのが仕事選びの出発点</div>
+      <div class="ending-point">大学生活の経験（部活・バイト・留学など）は「できること」を増やす投資だ</div>
+      <div class="ending-point">企業が見るのは熱意より「なぜあなたなのか」を語れる経験と能力</div>
+    </div>
+    <div class="ending-next">次のエピソードでは「結婚とお金の考え方」を考えます</div>
+    <button class="restart-btn" onclick="restartGame()">もう一度やってみる</button>
+  </div>
+
+</div>
+
+<script>
+
+const GLOS = {
+  'トレードオフ': '何かを得るために、別の何かを手放すこと。「時給が高い仕事を選んだら移動時間が増えた」など、得るものと失うものが必ずセットになっている状態のこと。',
+  '手取り': '給料から税金・社会保険料などが引かれた後、実際に受け取れる金額のこと。バイトの場合は年収103万円以下なら所得税はかからない。',
+  '生涯収入': '生まれてから引退するまでに稼ぐ収入の合計。高卒と大卒で平均3,000〜5,000万円の差があると言われるが、離職・転職・仕事の質によって大きく変わる。',
+  '奨学金': '大学などの学費を借りるお金。日本では多くが「貸与型（返済が必要）」で、卒業後に毎月返済が始まる。返済不要の「給付型」もある。',
+  '4象限マトリクス': '「やりたい・やりたくない」と「できる・できない」の2軸で物事を4つのエリアに分けて整理する考え方。仕事選びでは「できる×やりたい」の象限が最も強みになる。',
+  'インターンシップ': '学生が就職前に企業で実際に働く体験プログラム。短期（1〜5日）と長期（1ヶ月以上）があり、採用選考につながることも多い。',
+  '自己PR': '就活で「自分にはこんな能力・経験がある」と企業にアピールすること。「何をしたか」ではなく「なぜやったか・何を学んだか」を語ることが重要。',
+  'キャッシュフロー': '毎月のお金の流れのこと。収入から支出を引いた残りがプラスなら黒字、マイナスなら赤字。家計管理の基本はこのキャッシュフローを把握することから始まる。',
+  '厚生年金': '会社員が加入する年金。給料から天引きされ、会社も同額を負担する。国民年金より受取額が多く、退職すると加入できなくなる。',
+  '就業不能保険': '病気やケガで長期間働けなくなったとき、毎月一定額を受け取れる保険。特に独身など収入が途絶えたときに助けてくれる人がいない場合に重要。',
+  'NISA': '少額投資非課税制度。通常、投資で得た利益には約20%の税金がかかるが、NISAを使うと非課税になる。2024年から新NISAになり、年間投資上限が大幅に拡大した。',
+  'iDeCo': '個人型確定拠出年金。老後のために毎月積み立てる制度で、掛金が全額所得控除になるため節税効果が高い。60歳まで引き出せない代わりに、税制上の優遇が大きい。',
+  '生命保険': '死亡したとき、残された家族にお金が支払われる保険。独身で扶養家族がいない場合は優先度が低く、医療保険や就業不能保険の方が重要なことが多い。',
+  '介護保険': '40歳から強制加入する公的保険。介護が必要になった場合、ヘルパー・デイサービス・施設入所などのサービスを1〜3割の自己負担で使える。',
+  '繰り上げ返済': '住宅ローンなどを予定より早く多く返済すること。利息の支払いを減らせるが手元の現金が減るため、老後資金や緊急予備資金とのバランスが重要。',
+  '退職金': '会社を退職するときに支給されるお金。長年勤めるほど多くなる傾向があるが、近年は制度がない企業も増えており、金額は会社次第。',
+  '公的年金': '国が運営する老後の収入保障制度。国民年金（全員加入）と厚生年金（会社員加入）がある。受給額は加入期間や収入によって異なる。'
+};
+function gShow(term) {
+  var d = GLOS[term]; if (!d) return;
+  document.getElementById('gTerm').textContent = term;
+  document.getElementById('gDef').textContent = d;
+  document.getElementById('gOverlay').classList.add('open');
+}
+function gClose() { document.getElementById('gOverlay').classList.remove('open'); }
+
+let dualState = {};
+let selectedTags = [];
+let sampleFn = null;
+
+(async () => {
+  try { sampleFn = await claude.use('sample'); } catch(e) { sampleFn = null; }
+})();
+
+function setProgress(v) { document.getElementById('progressBar').style.width = v + '%'; }
+
+// ── タグ選択 ──
+function toggleTag(btn, label) {
+  if (btn.disabled) return;
+  const idx = selectedTags.indexOf(label);
+  if (idx >= 0) {
+    selectedTags.splice(idx, 1);
+    btn.classList.remove('selected');
+  } else {
+    selectedTags.push(label);
+    btn.classList.add('selected');
+  }
+  const submit = document.getElementById('tagSubmit');
+  submit.className = 'tag-submit' + (selectedTags.length > 0 ? ' show' : '');
+}
+
+const GOOD_TAGS = ['部活・サークルで継続力を磨く','バイトで社会経験を積む','留学・異文化体験で視野を広げる','ボランティアで課題解決を体験する','資格・スキル習得で専門性を高める','インターンで実務経験を積む','読書・学習で知識を積み上げる','ゼミ・研究で専門知識を深める'];
+const BAD_TAGS  = ['SNSのフォロワーを増やす','友達をたくさん作る'];
+
+function submitQ2() {
+  document.querySelectorAll('.tag-btn').forEach(b => b.disabled = true);
+  document.getElementById('tagSubmit').disabled = true;
+
+  const hits = selectedTags.filter(t => GOOD_TAGS.includes(t));
+  const miss = selectedTags.filter(t => BAD_TAGS.includes(t));
+
+  const resultEl = document.getElementById('tagResult');
+  selectedTags.forEach(t => {
+    const span = document.createElement('span');
+    span.className = 'tag-result-item ' + (GOOD_TAGS.includes(t) ? 'hit' : 'miss');
+    span.textContent = (GOOD_TAGS.includes(t) ? '✓ ' : '△ ') + t.replace('で継続力を磨く','').replace('で社会経験を積む','').replace('・異文化体験で視野を広げる','').replace('で課題解決を体験する','').replace('・スキル習得で専門性を高める','').replace('で実務経験を積む','').replace('・学習で知識を積み上げる','').replace('・研究で専門知識を深める','');
+    resultEl.appendChild(span);
+  });
+
+  let txt = '';
+  if (miss.length === 0 && hits.length >= 3) {
+    txt = '素晴らしい選択です！選んだ経験はどれも「コミュニケーション力・継続力・課題解決力」につながり、企業が求める能力を証明するエピソードになります。';
+  } else if (miss.length > 0) {
+    txt = `「${BAD_TAGS.filter(t => selectedTags.includes(t)).join('」「')}」は就活で直接評価されにくいです。大切なのは経験の数より「その経験から何を学んだか」を語れることです。`;
+  } else {
+    txt = '良い選択です。これらの経験はすべて「自分にできること」を増やし、面接で語れるエピソードになります。';
+  }
+
+  document.getElementById('q2FeedbackText').textContent = txt;
+  document.getElementById('q2Hl').textContent = '経験は「やった」だけでは意味がない。「なぜやったか」「何を学んだか」を言語化できて初めて自分の強みになる。';
+  document.getElementById('q2Feedback').classList.add('show');
+  setProgress(55);
+
+  callAI('q2', `あなたは1級FPの金融教育講師。大学生とその家族向けです。
+就活準備で大切な経験を選ぶクイズで「${selectedTags.join('、')}」を選びました。
+「時間とお金を自分への投資として使う大切さ」というテーマで、温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`);
+  document.getElementById('q2Next').classList.add('show');
+}
+
+// ── デュアル選択 ──
+function dualSelect(q, type, idx) {
+  if (!dualState[q]) dualState[q] = { best: null, worst: null };
+  const s = dualState[q];
+  const other = type === 'best' ? 'worst' : 'best';
+  if (s[type] === idx) { s[type] = null; }
+  else { if (s[other] === idx) s[other] = null; s[type] = idx; }
+  renderDual(q);
+  const btn = document.getElementById('q' + q + 'Confirm');
+  if (btn) btn.className = 'confirm-btn' + (s.best !== null && s.worst !== null ? ' show' : '');
+}
+function renderDual(q) {
+  const s = dualState[q] || {};
+  for (let i = 0; i < 4; i++) {
+    const bb = document.getElementById('q'+q+'b'+i);
+    const wb = document.getElementById('q'+q+'w'+i);
+    if (bb) bb.className = 'dual-btn best-btn'  + (s.best  === i ? ' active' : '');
+    if (wb) wb.className = 'dual-btn worst-btn' + (s.worst === i ? ' active' : '');
+  }
+}
+function lockDual(q) {
+  for (let i = 0; i < 4; i++) {
+    const bb = document.getElementById('q'+q+'b'+i);
+    const wb = document.getElementById('q'+q+'w'+i);
+    if (bb) bb.disabled = true;
+    if (wb) wb.disabled = true;
+  }
+}
+
+// ── Q1 確定 ──
+function confirmQ1() {
+  const s = dualState[1];
+  lockDual(1); document.getElementById('q1Confirm').style.display = 'none';
+  const bestGood  = s.best === 1 || s.best === 3;
+  const worstGood = s.worst === 0 || s.worst === 2;
+  let txt, hl;
+  if (bestGood && worstGood) {
+    txt = '完璧です！「できること」を整理して◎の象限を狙い、さらにその象限を広げていく。これが仕事選びの本質です。「やりたいこと」は後からついてくることも多いです。';
+    hl = 'やりたいことが見つからないのは普通。まず「できること」を棚卸しして、そこから仕事を探すのが現実的な出発点です。';
+  } else if (bestGood) {
+    txt = '「最も大切」はよく選べました。「最も的外れ」は、やりたいことが見つかるまで待つ姿勢や、給料だけで選ぶ考え方です。どちらも「自分の能力」を無視した判断です。';
+    hl = '給料が高い仕事は、それだけ求められる能力も高い。「できない」のに給料だけ見て選ぶと、入社後に苦しくなります。';
+  } else {
+    txt = '仕事選びで最も大切なのは「自分に何ができるか」の整理です。やりたいことだけを追っても、能力がなければ採用されません。まず◎の象限に入れる仕事を探しましょう。';
+    hl = 'やりたいこと × できること ＝ 理想の仕事。でも「できること」がなければ採用されない。だから今、できることを増やす行動が必要です。';
+  }
+  document.getElementById('q1FeedbackText').textContent = txt;
+  document.getElementById('q1Hl').textContent = hl;
+  document.getElementById('q1Feedback').classList.add('show');
+  setProgress(25);
+  const labels = ['やりたいことが見つかるまで待つ','できることから仕事を探す','給料が高ければやりたくなる','できることを増やして象限を広げる'];
+  callAI('q1', `あなたは1級FPの金融教育講師。大学生とその家族向けです。
+仕事選びの4象限クイズで
+・最も大切：「${labels[s.best]}」
+・最も的外れ：「${labels[s.worst]}」
+と選びました。「やりたいことよりできることが就活の出発点」というテーマで、温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`);
+  document.getElementById('q1Next').classList.add('show');
+}
+function showQ2() {
+  document.getElementById('q2Card').style.display = 'block';
+  document.getElementById('q2Card').scrollIntoView({ behavior:'smooth', block:'start' });
+  setProgress(40);
+}
+
+// ── Q3 確定 ──
+function confirmQ3() {
+  const s = dualState[3];
+  lockDual(3); document.getElementById('q3Confirm').style.display = 'none';
+  const bestGood  = s.best === 1 || s.best === 3;
+  const worstGood = s.worst === 2;
+  let txt, hl;
+  if (bestGood && worstGood) {
+    txt = '鋭い視点です！採用担当者が本当に見ているのは「学生時代に何を経験し、何を学んだか」と「入社後に貢献できる能力があるか」です。大学名は参考程度です。';
+    hl = '「やりたいです！」だけでは採用されない。「こんな経験があり、こんな能力があるので、御社のこの課題に貢献できます」と語れることが大切です。';
+  } else {
+    txt = '採用で最も重視されるのは大学名ではなく、学生時代の経験と、そこから得た能力です。熱意は大切ですが、それを裏付ける「実績・経験・能力」がなければ採用には至りません。';
+    hl = '熱意と大学名は入り口。でも最終的に「なぜあなたでなければいけないか」を語れる能力と経験があるかどうかが採用を決めます。';
+  }
+  document.getElementById('q3FeedbackText').textContent = txt;
+  document.getElementById('q3Hl').textContent = hl;
+  document.getElementById('q3Feedback').classList.add('show');
+  setProgress(75);
+  const labels = ['熱意と志望動機','学生時代の経験と学び','大学の偏差値','課題解決に貢献できる能力'];
+  callAI('q3', `あなたは1級FPの金融教育講師。大学生とその家族向けです。
+採用担当者の視点クイズで
+・最も重視される：「${labels[s.best]}」
+・最も関係ない：「${labels[s.worst]}」
+と選びました。「採用で見られているのは経験と能力」というテーマで、温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`);
+  document.getElementById('q3Next').classList.add('show');
+}
+function showQ3() {
+  document.getElementById('q3Card').style.display = 'block';
+  document.getElementById('q3Card').scrollIntoView({ behavior:'smooth', block:'start' });
+  setProgress(60);
+}
+
+// ── Q4 確定 ──
+function confirmQ4() {
+  const s = dualState[4];
+  lockDual(4); document.getElementById('q4Confirm').style.display = 'none';
+  const bestGood  = s.best === 0 || s.best === 3;
+  const worstGood = s.worst === 1 || s.worst === 2;
+  let txt, hl;
+  if (bestGood && worstGood) {
+    txt = '素晴らしい！「なぜやったか・何を学んだか」を言語化できる経験を積むことが自分の価値を上げる本質です。資格やインターンの数より、経験の「質と言語化」が大切です。';
+    hl = '経験は「やった事実」ではなく「そこから何を学び、どう成長したか」を語れて初めて価値になる。それが「自分の価値を上げる」ということです。';
+  } else {
+    txt = '資格やインターンの数を追うより、「なぜその経験をしたか」「そこから何を学んだか」を言語化できることの方がずっと価値があります。経験の質と自己分析が大切です。';
+    hl = '「何をやったか」より「なぜやったか・何を学んだか」。この問いに答えられる経験を積むことが、自分の市場価値を上げる近道です。';
+  }
+  document.getElementById('q4FeedbackText').textContent = txt;
+  document.getElementById('q4Hl').textContent = hl;
+  document.getElementById('q4Feedback').classList.add('show');
+  setProgress(95);
+  const labels = ['できることを特定して意識的に経験を積む','有名企業に片っ端から応募する','資格をたくさん取る','なぜやったかを言語化できる経験を積む'];
+  callAI('q4', `あなたは1級FPの金融教育講師。大学生とその家族向けです。
+自分の価値を上げる行動クイズで
+・最も本質的：「${labels[s.best]}」
+・最も的外れ：「${labels[s.worst]}」
+と選びました。「経験を言語化することが自分の価値になる」というテーマで、温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`);
+  document.getElementById('q4Next').classList.add('show');
+}
+function showQ4() {
+  document.getElementById('q4Card').style.display = 'block';
+  document.getElementById('q4Card').scrollIntoView({ behavior:'smooth', block:'start' });
+  setProgress(80);
+}
+
+function showEnding() {
+  document.getElementById('endingCard').classList.add('show');
+  setProgress(100);
+  document.getElementById('endingCard').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ── AI フィードバック ──
+async function callAI(qId, prompt) {
+  const boxId = qId + 'AI'; const textId = qId + 'AIText';
+  document.getElementById(boxId).classList.add('show');
+  if (!sampleFn) {
+    await new Promise(r => setTimeout(r, 2000));
+    sampleFn = await claude.use('sample').catch(() => null);
+  }
+  if (!sampleFn) {
+    document.getElementById(textId).innerHTML = '<span class="ai-unavailable">Claudeアカウントをお持ちの方には、ここにFPからの個別コメントが表示されます。</span>';
+    return;
+  }
+  const el = document.getElementById(textId);
+  el.innerHTML = '<div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> FPが考え中…</div>';
+  try {
+    const { text } = await sampleFn(prompt, {
+      modelTier: 'quick', cache: false,
+      onText: ({ text: t }) => { el.textContent = t; }
+    });
+    el.textContent = text;
+  } catch(e) {
+    const msgs = { not_granted: 'Claudeアカウントでログインするとコメントが表示されます', rate_limited: 'しばらく待ってからもう一度お試しください' };
+    el.innerHTML = `<span class="ai-unavailable">${msgs[e.code] || 'AIフィードバックを取得できませんでした（'+(e.code||'不明')+'）'}</span>`;
+  }
+}
+
+// ── リスタート ──
+function restartGame() {
+  dualState = {}; selectedTags = [];
+  setProgress(0);
+  ['q2Card','q3Card','q4Card'].forEach(id => document.getElementById(id).style.display = 'none');
+  ['q1Feedback','q2Feedback','q3Feedback','q4Feedback','q1AI','q2AI','q3AI','q4AI']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('show'); });
+  ['q1Next','q2Next','q3Next','q4Next'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('show'); });
+  [1,3,4].forEach(q => {
+    for(let i=0;i<4;i++){
+      const bb=document.getElementById('q'+q+'b'+i); const wb=document.getElementById('q'+q+'w'+i);
+      if(bb){bb.className='dual-btn best-btn';bb.disabled=false;}
+      if(wb){wb.className='dual-btn worst-btn';wb.disabled=false;}
+    }
+    const cf=document.getElementById('q'+q+'Confirm');
+    if(cf){cf.className='confirm-btn';cf.style.display='';}
+  });
+  document.getElementById('endingCard').classList.remove('show');
+  document.getElementById('tagResult').innerHTML = '';
+  document.querySelectorAll('.tag-btn').forEach(b => { b.className='tag-btn'; b.disabled=false; });
+  document.getElementById('tagSubmit').className = 'tag-submit';
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+</script>
+
+<div class="glossary-overlay" id="glossaryOverlay" onclick="if(event.target===this)closeGlossary()">
+  <div class="glossary-card">
+    <div class="glossary-header">
+      <div class="glossary-term" id="glossaryTerm"></div>
+      <button class="glossary-close" onclick="closeGlossary()">✕</button>
+    </div>
+    <div class="glossary-def" id="glossaryDef"></div>
+    <div class="glossary-footer">
+      <button class="glossary-ok" style="background:var(--teal)" onclick="closeGlossary()">わかった！</button>
+    </div>
+  </div>
+</div>
+
+<div class="g-overlay" id="gOverlay" onclick="if(event.target===this)gClose()">
+  <div class="g-card">
+    <div class="g-head">
+      <div class="g-term" id="gTerm"></div>
+      <button class="g-close" onclick="gClose()">✕</button>
+    </div>
+    <div class="g-def" id="gDef"></div>
+    <div class="g-foot">
+      <button class="g-ok" id="gOkBtn" style="background:var(--teal)" onclick="gClose()">わかった！</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

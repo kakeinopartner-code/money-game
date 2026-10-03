@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>お金と仕事を考えるゲーム｜FP事務所 あなたの家計のパートナー</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #111111;
+    --gray-dark: #333333;
+    --gray-mid: #666666;
+    --gray-soft: #999999;
+    --gray-line: #e0e0e0;
+    --gray-bg: #f7f7f7;
+    --white: #ffffff;
+    --accent: #1a2e4a;
+    --accent-light: #f0f3f8;
+    --ep1: #2d6fc8;
+    --ep2: #c03a6a;
+    --ep3: #0a7a60;
+    --ep4: #c84830;
+    --ep5: #1a2e4a;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *, *::before, *::after { box-sizing: inherit; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 48px; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    font-size: 14px;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── ヘッダー ── */
+  .site-header {
+    border-bottom: 1px solid var(--gray-line);
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: env(safe-area-inset-top, 0px);
+    background: var(--white); z-index: 10;
+  }
+  .site-logo {
+    font-size: 12px; font-weight: 500; color: var(--gray-mid);
+    text-decoration: none; letter-spacing: 0.04em;
+  }
+  .site-logo span { color: var(--black); font-weight: 700; }
+  .header-link {
+    font-size: 12px; color: var(--gray-mid);
+    text-decoration: none; border-bottom: 1px solid var(--gray-line);
+    padding-bottom: 1px; transition: color 0.15s, border-color 0.15s;
+  }
+  .header-link:hover { color: var(--black); border-color: var(--black); }
+
+  /* ── ヒーロー ── */
+  .hero {
+    padding: 72px 24px 64px;
+    max-width: 720px; margin: 0 auto;
+    border-bottom: 1px solid var(--gray-line);
+  }
+  .hero-kicker {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+    color: var(--gray-soft); margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .hero-title {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 300; line-height: 1.45;
+    letter-spacing: -0.01em;
+    color: var(--black); margin-bottom: 24px;
+  }
+  .hero-title strong { font-weight: 700; }
+  .hero-lead {
+    font-size: 14px; line-height: 1.9;
+    color: var(--gray-dark); max-width: 520px;
+    margin-bottom: 36px; font-weight: 300;
+  }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 24px;
+    border-top: 1px solid var(--gray-line);
+    padding-top: 20px;
+  }
+  .hero-meta-item {
+    font-size: 12px; color: var(--gray-mid);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .hero-meta-item strong { color: var(--black); font-weight: 700; }
+
+  /* ── セクション共通 ── */
+  .section {
+    max-width: 720px; margin: 0 auto;
+    padding: 56px 24px;
+    border-bottom: 1px solid var(--gray-line);
+  }
+  .section:last-of-type { border-bottom: none; }
+  .section-kicker {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+    color: var(--gray-soft); margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .section-heading {
+    font-size: clamp(20px, 3.5vw, 26px);
+    font-weight: 300; line-height: 1.5;
+    color: var(--black); margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+  .section-heading strong { font-weight: 700; }
+  .section-body {
+    font-size: 14px; line-height: 1.9;
+    color: var(--gray-dark); font-weight: 300;
+    max-width: 560px;
+  }
+
+  /* ── 特徴グリッド ── */
+  .feature-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--gray-line);
+    border: 1px solid var(--gray-line);
+    margin-top: 32px;
+  }
+  .feature-item {
+    background: var(--white); padding: 24px 22px;
+  }
+  .feature-icon { font-size: 18px; margin-bottom: 10px; }
+  .feature-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--black); }
+  .feature-body { font-size: 12px; line-height: 1.75; color: var(--gray-mid); font-weight: 300; }
+
+  /* ── エピソード一覧 ── */
+  .ep-list {
+    margin-top: 32px;
+    border-top: 1px solid var(--gray-line);
+  }
+  .ep-card {
+    display: flex; align-items: flex-start; gap: 20px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--gray-line);
+    text-decoration: none; color: inherit;
+    transition: background 0.12s;
+    cursor: pointer;
+  }
+  .ep-card:hover { background: var(--gray-bg); margin: 0 -24px; padding: 24px; }
+  .ep-num-wrap {
+    width: 40px; flex-shrink: 0; padding-top: 2px;
+  }
+  .ep-num {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+    color: var(--gray-soft);
+  }
+  .ep-bar {
+    height: 2px; width: 24px; margin-top: 6px; border-radius: 1px;
+  }
+  .ep1 .ep-bar { background: var(--ep1); }
+  .ep2 .ep-bar { background: var(--ep2); }
+  .ep3 .ep-bar { background: var(--ep3); }
+  .ep4 .ep-bar { background: var(--ep4); }
+  .ep5 .ep-bar { background: var(--ep5); }
+  .ep-body { flex: 1; }
+  .ep-tag {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .ep1 .ep-tag { color: var(--ep1); }
+  .ep2 .ep-tag { color: var(--ep2); }
+  .ep3 .ep-tag { color: var(--ep3); }
+  .ep4 .ep-tag { color: var(--ep4); }
+  .ep5 .ep-tag { color: var(--ep5); }
+  .ep-title {
+    font-size: 15px; font-weight: 700;
+    color: var(--black); margin-bottom: 7px; line-height: 1.45;
+  }
+  .ep-desc {
+    font-size: 13px; color: var(--gray-mid);
+    line-height: 1.75; font-weight: 300;
+  }
+  .ep-char {
+    font-size: 11px; color: var(--gray-soft); margin-top: 8px;
+  }
+  .ep-arrow {
+    font-size: 14px; color: var(--gray-line);
+    align-self: center; flex-shrink: 0;
+    transition: color 0.12s;
+  }
+  .ep-card:hover .ep-arrow { color: var(--gray-soft); }
+
+  /* ── 完了チェック ── */
+  .done-wrap {
+    margin-top: 40px;
+    border: 1px solid var(--gray-line);
+    padding: 28px 24px;
+    background: var(--gray-bg);
+  }
+  .done-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+    color: var(--gray-soft); text-transform: uppercase; margin-bottom: 18px;
+  }
+  .done-list { display: flex; flex-direction: column; gap: 12px; }
+  .done-item {
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer; user-select: none;
+  }
+  .done-check {
+    width: 20px; height: 20px;
+    border: 1.5px solid var(--gray-line); background: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 11px; transition: all 0.15s;
+  }
+  .done-item.checked .done-check {
+    background: var(--black); border-color: var(--black); color: var(--white);
+  }
+  .done-item-label {
+    font-size: 13px; font-weight: 400; color: var(--gray-dark);
+  }
+  .done-item.checked .done-item-label {
+    color: var(--gray-soft); text-decoration: line-through;
+  }
+  .done-progress-wrap { margin-top: 20px; }
+  .done-progress {
+    height: 2px; background: var(--gray-line); margin-bottom: 8px;
+  }
+  .done-bar {
+    height: 2px; background: var(--black); transition: width 0.4s ease;
+  }
+  .done-status {
+    font-size: 11px; color: var(--gray-soft); text-align: right;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── 全完了パネル ── */
+  .complete-panel {
+    margin-top: 20px; border: 1px solid var(--black);
+    padding: 28px 24px; display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .complete-panel.show { display: block; }
+  .complete-heading {
+    font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--black);
+  }
+  .complete-sub {
+    font-size: 13px; line-height: 1.85; color: var(--gray-mid);
+    margin-bottom: 20px; font-weight: 300;
+  }
+  .ai-box {
+    background: var(--gray-bg); padding: 20px 22px;
+  }
+  .ai-label-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  }
+  .ai-dot {
+    width: 6px; height: 6px; background: var(--black); border-radius: 50%;
+  }
+  .ai-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--gray-mid); text-transform: uppercase;
+  }
+  .ai-text {
+    font-size: 14px; line-height: 1.9; color: var(--gray-dark); font-weight: 300;
+  }
+  .ai-loading {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--gray-soft); font-size: 13px;
+  }
+  .dots span {
+    display: inline-block; width: 4px; height: 4px;
+    background: var(--gray-soft); border-radius: 50%;
+    margin: 0 2px; opacity: 0.4;
+    animation: pulse 1.2s infinite;
+  }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  /* ── プロフィール ── */
+  .profile-inner {
+    margin-top: 32px;
+    display: flex; gap: 28px; align-items: flex-start;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-line);
+  }
+  .profile-avatar {
+    width: 64px; height: 64px; background: var(--gray-bg);
+    border: 1px solid var(--gray-line);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; flex-shrink: 0;
+  }
+  .profile-name { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+  .profile-office { font-size: 12px; color: var(--gray-soft); margin-bottom: 12px; font-weight: 300; }
+  .profile-bio { font-size: 13px; line-height: 1.85; color: var(--gray-mid); font-weight: 300; }
+  .profile-quals {
+    margin-top: 24px; display: flex; flex-direction: column; gap: 0;
+  }
+  .qual-row {
+    display: flex; align-items: baseline; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--gray-line);
+    font-size: 13px;
+  }
+  .qual-row:first-child { border-top: 1px solid var(--gray-line); }
+  .qual-cat { font-size: 11px; font-weight: 500; color: var(--gray-soft); min-width: 80px; flex-shrink: 0; letter-spacing: 0.04em; }
+  .qual-val { color: var(--gray-dark); font-weight: 300; line-height: 1.7; }
+  .ach-grid {
+    margin-top: 24px; display: grid;
+    grid-template-columns: 1fr 1fr; gap: 1px;
+    background: var(--gray-line); border: 1px solid var(--gray-line);
+  }
+  .ach-item { background: var(--white); padding: 18px; }
+  .ach-cat { font-size: 11px; font-weight: 700; color: var(--gray-soft); letter-spacing: 0.06em; margin-bottom: 8px; }
+  .ach-list { font-size: 12px; line-height: 1.8; color: var(--gray-mid); font-weight: 300; }
+
+  /* ── CTA ── */
+  .cta-wrap {
+    background: var(--black); color: var(--white);
+    padding: 56px 24px; text-align: center;
+  }
+  .cta-inner { max-width: 480px; margin: 0 auto; }
+  .cta-heading {
+    font-size: clamp(18px, 3.5vw, 24px); font-weight: 300;
+    line-height: 1.6; margin-bottom: 16px; letter-spacing: -0.01em;
+  }
+  .cta-heading strong { font-weight: 700; }
+  .cta-sub {
+    font-size: 13px; line-height: 1.9; color: rgba(255,255,255,0.6);
+    margin-bottom: 32px; font-weight: 300;
+  }
+  .cta-btn {
+    display: inline-block; background: var(--white); color: var(--black);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px; font-weight: 700;
+    padding: 14px 36px; text-decoration: none;
+    letter-spacing: 0.06em;
+    transition: background 0.15s, color 0.15s;
+    border: 1px solid var(--white);
+  }
+  .cta-btn:hover { background: transparent; color: var(--white); }
+  .cta-note { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 14px; letter-spacing: 0.04em; }
+
+  /* ── フッター ── */
+  footer {
+    background: var(--white); border-top: 1px solid var(--gray-line);
+    padding: 24px; text-align: center;
+    font-size: 11px; color: var(--gray-soft); line-height: 1.9;
+    letter-spacing: 0.04em;
+  }
+  footer a { color: var(--gray-soft); text-decoration: none; border-bottom: 1px solid var(--gray-line); }
+  footer a:hover { color: var(--black); border-color: var(--black); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+  @media (max-width: 480px) {
+    .feature-grid { grid-template-columns: 1fr; }
+    .profile-inner { flex-direction: column; gap: 16px; }
+    .ach-grid { grid-template-columns: 1fr; }
+    .ep-card:hover { margin: 0; padding: 24px 0; background: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .complete-panel { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header class="site-header">
+  <a class="site-logo" href="https://www.kakeinopartner.com/" target="_blank" rel="noopener">
+    <span>あなたの家計のパートナー</span>
+  </a>
+  <a class="header-link" href="https://www.kakeinopartner.com/お問い合わせ/" target="_blank" rel="noopener">お問い合わせ</a>
+</header>
+
+<!-- ヒーロー -->
+<div class="hero">
+  <div class="hero-kicker">Financial Education Game</div>
+  <h1 class="hero-title">
+    お金と仕事を<br><strong>考えるゲーム</strong>
+  </h1>
+  <p class="hero-lead">
+    バイト・進路・就職・結婚・老後——人生のお金の選択を、物語を通じて疑似体験する金融教育ゲームです。「正解を覚える」のではなく、「どう考えるか」を問います。
+  </p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><strong>5</strong> エピソード</div>
+    <div class="hero-meta-item"><strong>各 5〜7</strong> 分</div>
+    <div class="hero-meta-item">スマホ・PC 対応</div>
+    <div class="hero-meta-item">家族で一緒にプレイ可</div>
+  </div>
+</div>
+
+<!-- ゲームの特徴 -->
+<div class="section">
+  <div class="section-kicker">About</div>
+  <h2 class="section-heading"><strong>判断力</strong>を育てる<br>4つの仕掛け</h2>
+  <div class="feature-grid">
+    <div class="feature-item">
+      <div class="feature-icon">🤔</div>
+      <div class="feature-title">どれも正しそうな4択</div>
+      <div class="feature-body">明らかな正解はありません。迷う中に学びがあります。</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">💬</div>
+      <div class="feature-title">FPからの個別フィードバック</div>
+      <div class="feature-body">選択後にAIが選択に合わせたひとことを届けます。</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">❓</div>
+      <div class="feature-title">用語をその場で確認</div>
+      <div class="feature-body">?ボタンをタップすると金融用語をすぐ解説します。</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">👨‍👩‍👧</div>
+      <div class="feature-title">家族で意見が分かれる</div>
+      <div class="feature-body">親子で答えが違う場面が、会話のきっかけになります。</div>
+    </div>
+  </div>
+</div>
+
+<!-- エピソード一覧 -->
+<div class="section">
+  <div class="section-kicker">Episodes</div>
+  <h2 class="section-heading">5つの物語で<br><strong>人生を疑似体験する</strong></h2>
+  <p class="section-body">高校生のバイトから45歳の老後準備まで。一人の人生に重なる5つのエピソードを順に体験してください。</p>
+
+  <div class="ep-list">
+    <a class="ep-card ep1" href="https://claude.ai/artifact/TBqnwc1kBWjEG8FsNndWus" target="_blank" rel="noopener">
+      <div class="ep-num-wrap">
+        <div class="ep-num">EP.1</div>
+        <div class="ep-bar"></div>
+      </div>
+      <div class="ep-body">
+        <div class="ep-tag">バイトとお金</div>
+        <div class="ep-title">バイトと時間のトレードオフ</div>
+        <div class="ep-desc">時給が高ければ得なの？交通費・移動時間・シフトまで含めたトータルコストで考える力を養います。</div>
+        <div class="ep-char">田中 健太（高校2年生）</div>
+      </div>
+      <div class="ep-arrow">›</div>
+    </a>
+
+    <a class="ep-card ep2" href="https://claude.ai/artifact/F6LUMGEf8RmNoPwMXnV5g9" target="_blank" rel="noopener">
+      <div class="ep-num-wrap">
+        <div class="ep-num">EP.2</div>
+        <div class="ep-bar"></div>
+      </div>
+      <div class="ep-body">
+        <div class="ep-tag">進路とお金</div>
+        <div class="ep-title">進路を選ぶ「理由」を考える</div>
+        <div class="ep-desc">「とりあえず大学」は500万円と4年間を理由なく使うこと。進学の目的を自分で問い直します。</div>
+        <div class="ep-char">佐藤 さくら（高校2年生）</div>
+      </div>
+      <div class="ep-arrow">›</div>
+    </a>
+
+    <a class="ep-card ep3" href="https://claude.ai/artifact/1V3nvaQYVpECKxB4YhCsGc" target="_blank" rel="noopener">
+      <div class="ep-num-wrap">
+        <div class="ep-num">EP.3</div>
+        <div class="ep-bar"></div>
+      </div>
+      <div class="ep-body">
+        <div class="ep-tag">仕事選び</div>
+        <div class="ep-title">仕事選びと自分の価値を上げる</div>
+        <div class="ep-desc">「やりたいこと」より先に「できること」を整理する。インターン中の大学生が直面するリアルな問いです。</div>
+        <div class="ep-char">中村 蓮（大学3年生）</div>
+      </div>
+      <div class="ep-arrow">›</div>
+    </a>
+
+    <a class="ep-card ep4" href="https://claude.ai/artifact/PXy2PWDP5pxod5WohLQg4S" target="_blank" rel="noopener">
+      <div class="ep-num-wrap">
+        <div class="ep-num">EP.4</div>
+        <div class="ep-bar"></div>
+      </div>
+      <div class="ep-body">
+        <div class="ep-tag">結婚とお金</div>
+        <div class="ep-title">結婚とお金の選択</div>
+        <div class="ep-desc">結婚する・しないでお金の備えはどう変わるか。29歳の蓮が迎える人生の分岐点を体験します。</div>
+        <div class="ep-char">中村 蓮（29歳・社会人7年目）</div>
+      </div>
+      <div class="ep-arrow">›</div>
+    </a>
+
+    <a class="ep-card ep5" href="https://claude.ai/artifact/3hVeX8mM7L2b4QMAURhycd" target="_blank" rel="noopener">
+      <div class="ep-num-wrap">
+        <div class="ep-num">EP.5</div>
+        <div class="ep-bar"></div>
+      </div>
+      <div class="ep-body">
+        <div class="ep-tag">老後の準備</div>
+        <div class="ep-title">老後の準備と人生最大の支出ラッシュ</div>
+        <div class="ep-desc">教育費・住宅ローン・介護・老後資金が同時に押し寄せる「四重苦」。45歳の蓮の現実を疑似体験します。</div>
+        <div class="ep-char">中村 蓮（45歳・社会人23年目）</div>
+      </div>
+      <div class="ep-arrow">›</div>
+    </a>
+  </div>
+
+  <!-- 完了チェック -->
+  <div class="done-wrap">
+    <div class="done-label">Playthrough Checklist</div>
+    <div class="done-list">
+      <div class="done-item" id="d1" onclick="toggleDone(1)">
+        <div class="done-check" id="c1"></div>
+        <div class="done-item-label">EP.1 バイトと時間のトレードオフ</div>
+      </div>
+      <div class="done-item" id="d2" onclick="toggleDone(2)">
+        <div class="done-check" id="c2"></div>
+        <div class="done-item-label">EP.2 進路を選ぶ「理由」を考える</div>
+      </div>
+      <div class="done-item" id="d3" onclick="toggleDone(3)">
+        <div class="done-check" id="c3"></div>
+        <div class="done-item-label">EP.3 仕事選びと自分の価値を上げる</div>
+      </div>
+      <div class="done-item" id="d4" onclick="toggleDone(4)">
+        <div class="done-check" id="c4"></div>
+        <div class="done-item-label">EP.4 結婚とお金の選択</div>
+      </div>
+      <div class="done-item" id="d5" onclick="toggleDone(5)">
+        <div class="done-check" id="c5"></div>
+        <div class="done-item-label">EP.5 老後の準備と人生最大の支出ラッシュ</div>
+      </div>
+    </div>
+    <div class="done-progress-wrap">
+      <div class="done-progress"><div class="done-bar" id="doneBar" style="width:0%"></div></div>
+      <div class="done-status" id="doneStatus">0 / 5 完了</div>
+    </div>
+  </div>
+
+  <!-- 全完了パネル -->
+  <div class="complete-panel" id="completePanel">
+    <div class="complete-heading">全エピソード完了</div>
+    <div class="complete-sub">お疲れさまでした。5つの物語を通じてお金と人生の選択を体験しましたね。FPからのメッセージをどうぞ。</div>
+    <div class="ai-box">
+      <div class="ai-label-row">
+        <div class="ai-dot"></div>
+        <div class="ai-label">FP 山本亮 からのメッセージ</div>
+      </div>
+      <div class="ai-text" id="aiCommentText">
+        <div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div>&ensp;考え中…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- プロフィール -->
+<div class="section">
+  <div class="section-kicker">Creator</div>
+  <h2 class="section-heading">このゲームを作った<strong>FP</strong></h2>
+
+  <div class="profile-inner">
+    <div class="profile-avatar" style="width:120px;height:148px;border-radius:4px;overflow:hidden;flex-shrink:0;border:1px solid var(--gray-line);"><img src="photo.jpg" alt="山本亮" style="width:100%;height:100%;object-fit:cover;object-position:top center;"></div>
+    <div style="flex:1">
+      <div class="profile-name">山本 亮</div>
+      <div class="profile-office">FP事務所 あなたの家計のパートナー 代表</div>
+      <div class="profile-bio">
+        金融業界出身ではないFPとして、普通の生活で感じるお金の疑問やライフプランの不安を専門用語なしに伝えています。旅行会社・就職情報会社でのキャリアを経てFPに転身。キャリア開発と金融教育の両方に精通し、中学・高校・大学・企業での講演・研修実績多数。2024年よりJ-FLEC認定アドバイザーとして活動。
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-quals">
+    <div class="qual-row">
+      <div class="qual-cat">資格</div>
+      <div class="qual-val">CFP®（J-90278831）/ 1級ファイナンシャル・プランニング技能士 / DCアドバイザー / 住宅ローンアドバイザー / CDA</div>
+    </div>
+    <div class="qual-row">
+      <div class="qual-cat">認定</div>
+      <div class="qual-val">J-FLEC認定アドバイザー（2024〜）/ 日本FP協会 パーソナルファイナンス教育インストラクター / 日本学生支援機構 スカラシップアドバイザー</div>
+    </div>
+    <div class="qual-row">
+      <div class="qual-cat">その他</div>
+      <div class="qual-val">日経TEST 880点</div>
+    </div>
+  </div>
+
+  <div class="ach-grid">
+    <div class="ach-item">
+      <div class="ach-cat">教育機関</div>
+      <div class="ach-list">
+        神奈川・東京・静岡の中学校・高等学校<br>
+        私立大学（文系・理系）金融リテラシー講座<br>
+        亜細亜大学 日本FP協会寄付講座
+      </div>
+    </div>
+    <div class="ach-item">
+      <div class="ach-cat">社会人・企業向け</div>
+      <div class="ach-list">
+        首都圏・静岡県 信用金庫 ライフプラン研修<br>
+        損害保険会社 社員向け研修<br>
+        NPO団体・FP団体 勉強会・セミナー
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-wrap">
+  <div class="cta-inner">
+    <h2 class="cta-heading">このゲームをきっかけに<br><strong>金融教育講座を依頼する</strong></h2>
+    <p class="cta-sub">ゲームで体験した内容をさらに深く理解するための解説講座を承ります。学校・PTA・企業・地域団体など、幅広い場面に対応しています。</p>
+    <a class="cta-btn" href="https://www.kakeinopartner.com/お問い合わせ/" target="_blank" rel="noopener">
+      お問い合わせ
+    </a>
+    <div class="cta-note">オンライン・対面 / 全国対応</div>
+  </div>
+</div>
+
+<!-- フッター -->
+<footer>
+  <div>FP事務所 あなたの家計のパートナー</div>
+  <div style="margin-top:6px">
+    <a href="https://www.kakeinopartner.com/" target="_blank">公式サイト</a>
+    &ensp;|&ensp;
+    <a href="https://www.kakeinopartner.com/プロフィール/" target="_blank">プロフィール</a>
+    &ensp;|&ensp;
+    <a href="https://www.kakeinopartner.com/お問い合わせ/" target="_blank">お問い合わせ</a>
+  </div>
+  <div style="margin-top:8px">© FP事務所 あなたの家計のパートナー</div>
+</footer>
+
+<script>
+let done = [false, false, false, false, false];
+let sampleFn = null;
+let commentGenerated = false;
+
+(async () => {
+  try { sampleFn = await claude.use('sample'); } catch(e) { sampleFn = null; }
+})();
+
+function toggleDone(n) {
+  done[n-1] = !done[n-1];
+  const item = document.getElementById('d'+n);
+  const check = document.getElementById('c'+n);
+  if (done[n-1]) {
+    item.classList.add('checked');
+    check.textContent = '✓';
+  } else {
+    item.classList.remove('checked');
+    check.textContent = '';
+  }
+  const count = done.filter(Boolean).length;
+  document.getElementById('doneBar').style.width = (count / 5 * 100) + '%';
+  document.getElementById('doneStatus').textContent = count + ' / 5 完了';
+  if (count === 5) showComplete();
+  else document.getElementById('completePanel').classList.remove('show');
+}
+
+async function showComplete() {
+  document.getElementById('completePanel').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('completePanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
+  if (commentGenerated) return;
+  commentGenerated = true;
+
+  if (!sampleFn) {
+    await new Promise(r => setTimeout(r, 2000));
+    sampleFn = await claude.use('sample').catch(() => null);
+  }
+
+  const el = document.getElementById('aiCommentText');
+
+  if (!sampleFn) {
+    el.textContent = '';
+    return;
+    return;
+  }
+
+  el.innerHTML = '<div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div>&ensp;考え中…</div>';
+
+  const prompt = `あなたは「FP事務所 あなたの家計のパートナー」代表の1級FP・山本亮です。
+中高生とその家族が、以下の5つのエピソードからなる金融教育ゲームを全て完了しました。
+EP.1 バイトと時間のトレードオフ（高校生・健太）
+EP.2 進路を選ぶ「理由」を考える（高校生・さくら）
+EP.3 仕事選びと自分の価値を上げる（大学生・蓮）
+EP.4 結婚とお金の選択（社会人29歳・蓮）
+EP.5 老後の準備と人生最大の支出ラッシュ（45歳・蓮）
+全5エピソードを終えたプレイヤーへの総括メッセージを書いてください。
+・「何のために」という問いがどのエピソードにも共通していたこと
+・お金は「稼ぐ・使う・備える」という流れで動いていること
+・このゲームをきっかけに家族でお金の話をしてほしいこと
+・もっと深く学びたい方には講座もあること
+以上を含めて、温かく本質を突いた200〜250文字のメッセージをFPとして一人称で書いてください。文字数カウントや補足説明は不要です。`;
+
+  try {
+    const { text } = await sampleFn(prompt, {
+      modelTier: 'default', cache: false,
+      onText: ({ text: t }) => { el.textContent = t; }
+    });
+    el.textContent = text;
+  } catch(e) {
+    el.textContent = '全5エピソードを完了していただき、ありがとうございます。どのステージでも共通するのは「何のために」という問いです。ぜひ家族でお金の話をしてみてください。';
+  }
+}
+</script>
+</body>
+</html>

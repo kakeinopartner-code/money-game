@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>お金と仕事を考えるゲーム｜EP.1 バイトと時間のトレードオフ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #e8f4fd;
+    --sky-mid: #b8d9f5;
+    --blue: #3a7bd5;
+    --blue-dark: #2a5fa8;
+    --mint: #e6f7f2;
+    --mint-mid: #a8dece;
+    --green: #2eaa7a;
+    --peach: #fff0e6;
+    --orange: #e8834a;
+    --lemon: #fffbe6;
+    --yellow: #f0c040;
+    --yellow-dark: #c9a020;
+    --lavender: #f0eefa;
+    --purple: #7c5cbf;
+    --white: #ffffff;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --text: #2c3255;
+    --text-soft: #7a82a0;
+    --border: #dde3f0;
+    --correct: #2eaa7a;
+    --wrong: #e05a5a;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *, *::before, *::after { box-sizing: inherit; margin: 0; padding: 0; }
+  html, body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100%;
+    line-height: 1;
+  }
+
+  /* ヘッダー */
+  .header {
+    background: var(--blue);
+    color: var(--white);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(58,123,213,0.2);
+  }
+  .header-ep {
+    background: var(--yellow);
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 900;
+    padding: 4px 9px;
+    border-radius: 4px;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  .header-title { font-size: 13px; font-weight: 700; line-height: 1.35; }
+
+  /* プログレス */
+  .progress-wrap { background: var(--sky-mid); height: 5px; }
+  .progress-bar { height: 5px; background: var(--yellow); transition: width 0.5s ease; }
+
+  /* コンテナ */
+  .container { max-width: 600px; margin: 0 auto; padding: 22px 16px 56px; }
+
+  /* シーンカード */
+  .scene-card {
+    background: linear-gradient(135deg, var(--blue) 0%, #5b9be0 100%);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 24px 22px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 16px rgba(58,123,213,0.18);
+  }
+  .scene-tag { font-size: 11px; font-weight: 700; color: var(--yellow); letter-spacing: 0.08em; margin-bottom: 10px; }
+  .scene-title { font-size: 20px; font-weight: 900; line-height: 1.45; margin-bottom: 12px; }
+  .scene-body { font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.88); }
+  .character-info {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 12px 14px; margin-top: 14px;
+  }
+  .character-avatar {
+    width: 46px; height: 46px; background: var(--yellow);
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 22px; flex-shrink: 0;
+  }
+  .character-detail { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.92); }
+  .character-detail strong { display: block; font-size: 15px; color: #fff; margin-bottom: 2px; }
+
+  /* 問題カード */
+  .question-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 22px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 10px rgba(44,50,85,0.07);
+    border: 1.5px solid var(--border);
+  }
+  .q-step { font-size: 11px; font-weight: 700; color: var(--text-soft); letter-spacing: 0.06em; margin-bottom: 8px; }
+  .q-label {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 4px; margin-bottom: 10px;
+  }
+  .q-label.predict { background: var(--lemon); color: var(--yellow-dark); border: 1px solid var(--yellow); }
+  .q-label.reason  { background: var(--lavender); color: var(--purple); border: 1px solid #c5b8ee; }
+  .q-label.choice  { background: var(--sky); color: var(--blue); border: 1px solid var(--sky-mid); }
+  .q-text { font-size: 16px; font-weight: 700; line-height: 1.65; margin-bottom: 6px; color: var(--text); }
+  .q-sub  { font-size: 13px; color: var(--text-soft); line-height: 1.65; margin-bottom: 16px; }
+
+  /* 情報ボックス */
+  .info-box {
+    background: var(--sky);
+    border: 1.5px solid var(--sky-mid);
+    border-radius: 10px;
+    padding: 13px 15px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+  .info-box strong { color: var(--blue-dark); }
+
+  /* 選択肢：最も／最も当てはまらない */
+  .dual-instructions {
+    display: flex; gap: 8px; margin-bottom: 12px;
+  }
+  .dual-badge {
+    flex: 1; text-align: center; font-size: 11px; font-weight: 700;
+    padding: 6px 8px; border-radius: 7px; line-height: 1.4;
+  }
+  .dual-badge.best  { background: var(--mint); color: var(--green); border: 1.5px solid var(--mint-mid); }
+  .dual-badge.worst { background: var(--peach); color: var(--orange); border: 1.5px solid #f0c0a0; }
+
+  .dual-options { display: flex; flex-direction: column; gap: 10px; }
+  .dual-option {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 14px 13px 14px;
+    font-size: 14px; font-weight: 500; color: var(--text);
+    line-height: 1.55;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .dual-option-text { flex: 1; }
+  .dual-btns { display: flex; gap: 6px; flex-shrink: 0; margin-top: 2px; }
+  .dual-btn {
+    border: none; border-radius: 6px;
+    padding: 6px 10px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 11px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .dual-btn.best-btn  { background: var(--mint); color: var(--green); border: 1.5px solid var(--mint-mid); }
+  .dual-btn.worst-btn { background: var(--peach); color: var(--orange); border: 1.5px solid #f0c0a0; }
+  .dual-btn.best-btn.active  { background: var(--green); color: #fff; }
+  .dual-btn.worst-btn.active { background: var(--orange); color: #fff; }
+  .dual-btn:disabled { opacity: 0.45; cursor: default; }
+
+  /* 従来の選択肢（理由を選ぶ用） */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    width: 100%; text-align: left;
+    background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 13px 15px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px; font-weight: 500; color: var(--text);
+    cursor: pointer; transition: all 0.15s; line-height: 1.55;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--blue); background: var(--sky); }
+  .option-btn.selected { border-color: var(--blue); background: var(--sky); }
+  .option-btn.correct  { border-color: var(--correct); background: var(--mint); color: var(--correct); font-weight: 700; }
+  .option-btn.wrong    { border-color: var(--wrong); background: #fff0f0; color: var(--wrong); opacity: 0.7; }
+  .option-btn:disabled { cursor: default; }
+
+  /* 確認ボタン */
+  .confirm-btn {
+    width: 100%; background: var(--blue); color: #fff;
+    border: none; border-radius: 10px; padding: 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    margin-top: 14px; display: none; transition: background 0.15s;
+  }
+  .confirm-btn:hover { background: var(--blue-dark); }
+  .confirm-btn.show { display: block; }
+  .confirm-btn:disabled { opacity: 0.5; cursor: default; }
+
+  /* フィードバックボックス */
+  .feedback-box {
+    background: var(--sky);
+    border: 1.5px solid var(--sky-mid);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-top: 14px;
+    display: none;
+    animation: fadeSlide 0.3s ease;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-head {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+  }
+  .feedback-icon {
+    width: 28px; height: 28px;
+    background: var(--blue); color: #fff;
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 13px; flex-shrink: 0;
+  }
+  .feedback-label { font-size: 11px; font-weight: 700; color: var(--blue-dark); letter-spacing: 0.05em; }
+  .feedback-text { font-size: 14px; line-height: 1.8; color: var(--text); }
+  .feedback-hl {
+    background: var(--white); border-left: 3px solid var(--blue);
+    padding: 9px 13px; margin-top: 10px; border-radius: 0 7px 7px 0;
+    font-size: 13px; font-weight: 700; color: var(--blue-dark); line-height: 1.65;
+  }
+
+  /* 計算機 */
+  .calc-wrap {
+    background: var(--lemon);
+    border: 1.5px solid var(--yellow);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .calc-title { font-size: 12px; font-weight: 700; color: var(--yellow-dark); margin-bottom: 10px; letter-spacing: 0.04em; }
+  .calc-display {
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 10px 14px;
+    font-size: 22px; font-weight: 700; color: var(--text);
+    text-align: right; margin-bottom: 10px; min-height: 48px;
+    letter-spacing: 0.02em;
+  }
+  .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .calc-btn {
+    border: 1.5px solid var(--border); border-radius: 7px;
+    padding: 11px 4px; font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    background: var(--white); color: var(--text);
+    transition: background 0.1s;
+  }
+  .calc-btn:hover { background: var(--sky); }
+  .calc-btn.op { background: var(--sky); color: var(--blue-dark); }
+  .calc-btn.eq { background: var(--blue); color: var(--white); border-color: var(--blue); }
+  .calc-btn.eq:hover { background: var(--blue-dark); }
+  .calc-btn.clr { background: var(--peach); color: var(--orange); border-color: #f0c0a0; }
+  .calc-btn.use-btn {
+    grid-column: span 4; background: var(--mint);
+    color: var(--green); border-color: var(--mint-mid);
+    font-size: 13px;
+  }
+  .calc-btn.use-btn:hover { background: #c5ede0; }
+
+  /* 予測入力 */
+  .predict-wrap { margin-bottom: 4px; }
+  .predict-display {
+    background: var(--white); border: 2px solid var(--yellow);
+    border-radius: 10px; padding: 12px 16px;
+    font-size: 24px; font-weight: 900; color: var(--text);
+    text-align: center; margin-bottom: 12px; min-height: 54px;
+    letter-spacing: 0.02em;
+  }
+  .predict-hint { font-size: 12px; color: var(--text-soft); text-align: center; margin-bottom: 10px; }
+  .predict-submit {
+    width: 100%; background: var(--yellow); color: var(--text);
+    border: none; border-radius: 10px; padding: 13px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px; font-weight: 900; cursor: pointer;
+    display: none; transition: background 0.15s;
+  }
+  .predict-submit:hover { background: var(--yellow-dark); color: #fff; }
+  .predict-submit.show { display: block; }
+
+  /* 結果比較 */
+  .result-compare { display: flex; gap: 10px; margin-top: 14px; }
+  .result-col { flex: 1; border-radius: 10px; padding: 13px; text-align: center; }
+  .result-col.yours { background: var(--lemon); border: 1.5px solid var(--yellow); }
+  .result-col.real  { background: var(--mint);  border: 1.5px solid var(--mint-mid); }
+  .result-col-lbl { font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+  .result-col.yours .result-col-lbl { color: var(--yellow-dark); }
+  .result-col.real  .result-col-lbl { color: var(--green); }
+  .result-col-val { font-size: 20px; font-weight: 900; color: var(--text); }
+  .result-col-sub { font-size: 11px; color: var(--text-soft); margin-top: 4px; }
+  .calc-breakdown {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 13px; margin-top: 10px;
+    font-size: 12px; line-height: 1.9; color: var(--text-soft);
+  }
+  .calc-breakdown strong { color: var(--text); }
+
+  /* AI フィードバック */
+  .ai-box {
+    background: var(--lavender);
+    border: 1.5px solid #c5b8ee;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-top: 14px;
+    display: none;
+    animation: fadeSlide 0.35s ease;
+  }
+  .ai-box.show { display: block; }
+  .ai-head { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+  .ai-icon {
+    width: 30px; height: 30px;
+    background: var(--purple); color: #fff;
+    border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-size: 15px; flex-shrink: 0;
+  }
+  .ai-label { font-size: 11px; font-weight: 700; color: var(--purple); letter-spacing: 0.04em; }
+  .ai-text { font-size: 14px; line-height: 1.85; color: var(--text); }
+  .ai-loading { display: flex; align-items: center; gap: 8px; color: var(--text-soft); font-size: 13px; }
+  .dots span {
+    display: inline-block; width: 6px; height: 6px;
+    background: var(--purple); border-radius: 50%; margin: 0 2px; opacity: 0.3;
+    animation: pulse 1.2s infinite;
+  }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+  .ai-unavailable { font-size: 12px; color: var(--text-soft); font-style: italic; }
+
+  /* 次へボタン */
+  .next-btn {
+    width: 100%; background: var(--blue); color: #fff;
+    border: none; border-radius: 10px; padding: 15px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px; font-weight: 900; cursor: pointer;
+    margin-top: 16px; display: none; transition: background 0.15s;
+  }
+  .next-btn:hover { background: var(--blue-dark); }
+  .next-btn.show { display: block; }
+
+  /* エンディング */
+  .ending-card {
+    background: linear-gradient(135deg, #4a90d9 0%, #6ab0f0 100%);
+    color: #fff; border-radius: 16px; padding: 28px 22px;
+    text-align: center; margin-top: 20px;
+    display: none; animation: fadeSlide 0.5s ease;
+    box-shadow: 0 4px 16px rgba(58,123,213,0.22);
+  }
+  .ending-card.show { display: block; }
+  .ending-badge {
+    display: inline-block; background: var(--yellow); color: var(--text);
+    font-size: 12px; font-weight: 900; padding: 5px 16px;
+    border-radius: 20px; margin-bottom: 16px;
+  }
+  .ending-title { font-size: 22px; font-weight: 900; line-height: 1.45; margin-bottom: 18px; }
+  .ending-points {
+    text-align: left; background: rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 16px 18px; margin-bottom: 18px;
+  }
+  .ending-point { font-size: 14px; line-height: 1.8; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.15); }
+  .ending-point:last-child { border-bottom: none; }
+  .ending-point::before { content: '✦'; color: var(--yellow); margin-right: 8px; font-size: 12px; }
+  .ending-next { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 8px; }
+  .restart-btn {
+    background: transparent; color: var(--yellow);
+    border: 2px solid var(--yellow); border-radius: 10px;
+    padding: 12px 28px; font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    margin-top: 18px; transition: all 0.15s;
+  }
+  .restart-btn:hover { background: var(--yellow); color: var(--text); }
+
+  
+
+  /* ── 用語解説ポップアップ ── */
+  .g-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(100,100,100,0.25); color: #fff;
+    font-size: 11px; font-weight: 900; cursor: pointer;
+    border: none; font-family: inherit;
+    margin-left: 3px; vertical-align: middle; flex-shrink: 0;
+    transition: background 0.15s; line-height: 1; padding: 0;
+  }
+  .g-btn:hover { background: rgba(0,0,0,0.5); }
+  .g-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .g-overlay.open { opacity: 1; pointer-events: all; }
+  .g-card {
+    background: #fff; border-radius: 16px; padding: 22px 20px;
+    max-width: 380px; width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    transform: translateY(10px); transition: transform 0.2s;
+  }
+  .g-overlay.open .g-card { transform: translateY(0); }
+  .g-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .g-term { font-size: 17px; font-weight: 900; color: #1a2030; }
+  .g-close {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #f0f0f0; border: none; cursor: pointer;
+    font-size: 14px; color: #666; display: flex; align-items: center; justify-content: center;
+  }
+  .g-def { font-size: 14px; line-height: 1.85; color: #2a2a2a; }
+  .g-foot { margin-top: 16px; text-align: center; }
+  .g-ok {
+    color: #fff; border: none; border-radius: 8px;
+    padding: 10px 28px; font-family: inherit;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .feedback-box, .ai-box, .ending-card { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-ep">EP.1</span>
+  <span class="header-title">バイトと時間のトレードオフ<button class="g-btn" onclick="gShow('トレードオフ')">?</button></span>
+</div>
+<div class="progress-wrap">
+  <div class="progress-bar" id="progressBar" style="width:0%"></div>
+</div>
+
+<div class="container">
+
+  <!-- シーン導入 -->
+  <div class="scene-card">
+    <div class="scene-tag">EPISODE 1 ― SCENE</div>
+    <div class="scene-title">バイトを選ぶ前に、<br>考えたことある？</div>
+    <div class="scene-body">高校2年生の健太は、欲しいものができてアルバイトを始めることにした。近所には複数の選択肢がある。さてどう考える？</div>
+    <div class="character-info">
+      <div class="character-avatar">👦</div>
+      <div class="character-detail">
+        <strong>田中 健太（17歳）</strong>
+        高校2年生・サッカー部（週3練習）<br>
+        目標：欲しいスニーカー ¥18,000
+      </div>
+    </div>
+  </div>
+
+  <!-- Q1：バイト選びの考え方（最も／最も当てはまらない） -->
+  <div class="question-card" id="q1Card">
+    <div class="q-step">STEP 1 / 4</div>
+    <div class="q-label reason">考え方を選ぶ</div>
+    <div class="q-text">バイトを選ぶとき、大切にすべき考え方はどれ？</div>
+    <div class="q-sub">それぞれの選択肢について「最も大切」と「最も関係ない」を1つずつ選んでください</div>
+
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も大切だと思う</div>
+      <div class="dual-badge worst">💨 最も関係ないと思う</div>
+    </div>
+
+    <div class="dual-options" id="q1Options">
+      <div class="dual-option" id="q1opt0">
+        <div class="dual-option-text">時給が高い方を選ぶ。お金を稼ぐのが目的なのだから当然だ</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',0)"  id="q1b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',0)" id="q1w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option" id="q1opt1">
+        <div class="dual-option-text">交通費や移動時間を含めたトータルコストで比較する</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',1)"  id="q1b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',1)" id="q1w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option" id="q1opt2">
+        <div class="dual-option-text">シフトの柔軟さと自分の生活リズムへの影響を最優先にする</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',2)"  id="q1b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',2)" id="q1w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option" id="q1opt3">
+        <div class="dual-option-text">職場の雰囲気や人間関係が自分に合っているかを重視する</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(1,'best',3)"  id="q1b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(1,'worst',3)" id="q1w3">💨</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="confirm-btn" id="q1Confirm" onclick="confirmQ1()">この選択で決定する</button>
+
+    <div class="feedback-box" id="q1Feedback">
+      <div class="feedback-head">
+        <div class="feedback-icon">💡</div>
+        <div class="feedback-label">解説</div>
+      </div>
+      <div class="feedback-text" id="q1FeedbackText"></div>
+      <div class="feedback-hl" id="q1Hl"></div>
+    </div>
+    <div class="ai-box" id="q1AI">
+      <div class="ai-head">
+        <div class="ai-icon">🤖</div>
+        <div class="ai-label">FPからのひとこと</div>
+      </div>
+      <div class="ai-text" id="q1AIText">
+        <div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div>
+      </div>
+    </div>
+    <button class="next-btn" id="q1Next" onclick="showQ2()">次の問題へ →</button>
+  </div>
+
+  <!-- Q2：予測クイズ＋内蔵計算機 -->
+  <div class="question-card" id="q2Card" style="display:none">
+    <div class="q-step">STEP 2 / 4</div>
+    <div class="q-label predict">予測クイズ</div>
+    <div class="q-text">時給1,200円のバイトで1ヶ月働いたら、<br>手元に残る手取り<button class="g-btn" onclick="gShow('手取り')">?</button>はいくら？</div>
+    <div class="q-sub">条件：週3日・1日5時間・交通費（往復280円）は自己負担。バイトの収入は年103万円以下なので所得税はかかりません。</div>
+
+    <div class="info-box">
+      <strong>🧮 計算してみよう</strong><br>
+      1,200円 × __ 時間 × __ 日 ＝ ？円<br>
+      そこから交通費を引くといくら残る？
+    </div>
+
+    <!-- 計算機 -->
+    <div class="calc-wrap">
+      <div class="calc-title">🖩 計算機（使っていいよ！）</div>
+      <div class="calc-display" id="calcDisplay">0</div>
+      <div class="calc-grid">
+        <button class="calc-btn clr" onclick="calcInput('C')">C</button>
+        <button class="calc-btn op"  onclick="calcInput('±')">±</button>
+        <button class="calc-btn op"  onclick="calcInput('%')">%</button>
+        <button class="calc-btn op"  onclick="calcInput('÷')">÷</button>
+        <button class="calc-btn"     onclick="calcInput('7')">7</button>
+        <button class="calc-btn"     onclick="calcInput('8')">8</button>
+        <button class="calc-btn"     onclick="calcInput('9')">9</button>
+        <button class="calc-btn op"  onclick="calcInput('×')">×</button>
+        <button class="calc-btn"     onclick="calcInput('4')">4</button>
+        <button class="calc-btn"     onclick="calcInput('5')">5</button>
+        <button class="calc-btn"     onclick="calcInput('6')">6</button>
+        <button class="calc-btn op"  onclick="calcInput('－')">－</button>
+        <button class="calc-btn"     onclick="calcInput('1')">1</button>
+        <button class="calc-btn"     onclick="calcInput('2')">2</button>
+        <button class="calc-btn"     onclick="calcInput('3')">3</button>
+        <button class="calc-btn op"  onclick="calcInput('＋')">＋</button>
+        <button class="calc-btn"     onclick="calcInput('0')" style="grid-column:span 2">0</button>
+        <button class="calc-btn"     onclick="calcInput('.')">.</button>
+        <button class="calc-btn eq"  onclick="calcInput('=')">=</button>
+        <button class="calc-btn use-btn" onclick="useCalcResult()">この金額を予測として入力する →</button>
+      </div>
+    </div>
+
+    <div class="predict-wrap">
+      <div class="predict-display" id="predictDisplay">金額を入力してください</div>
+      <div class="predict-hint">計算機の「この金額を入力する」か、上のボタンで直接入力できます</div>
+      <button class="predict-submit show" id="predictSubmit" onclick="submitQ2()">この金額で予測する</button>
+    </div>
+
+    <div class="feedback-box" id="q2Feedback">
+      <div class="feedback-head">
+        <div class="feedback-icon">📊</div>
+        <div class="feedback-label">実際の計算結果</div>
+      </div>
+      <div class="result-compare">
+        <div class="result-col yours">
+          <div class="result-col-lbl">あなたの予測</div>
+          <div class="result-col-val" id="q2YourVal">—</div>
+          <div class="result-col-sub">円</div>
+        </div>
+        <div class="result-col real">
+          <div class="result-col-lbl">実際の手取り</div>
+          <div class="result-col-val">¥68,640</div>
+          <div class="result-col-sub">円</div>
+        </div>
+      </div>
+      <div class="calc-breakdown">
+        1,200円 × 5時間 × 12日 ＝ <strong>72,000円</strong><br>
+        交通費：280円 × 12日 ＝ <strong>3,360円</strong><br>
+        手取り<button class="g-btn" onclick="gShow('手取り')">?</button>：72,000 − 3,360 ＝ <strong>68,640円</strong><br>
+        ※高校生のバイト収入は年103万円以下なら所得税なし
+      </div>
+      <div class="feedback-text" id="q2FeedbackText" style="margin-top:12px;"></div>
+    </div>
+    <div class="ai-box" id="q2AI">
+      <div class="ai-head">
+        <div class="ai-icon">🤖</div>
+        <div class="ai-label">FPからのひとこと</div>
+      </div>
+      <div class="ai-text" id="q2AIText">
+        <div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div>
+      </div>
+    </div>
+    <button class="next-btn" id="q2Next" onclick="showQ3()">次の問題へ →</button>
+  </div>
+
+  <!-- Q3：お金の使い方（最も／最も当てはまらない） -->
+  <div class="question-card" id="q3Card" style="display:none">
+    <div class="q-step">STEP 3 / 4</div>
+    <div class="q-label reason">考え方を選ぶ</div>
+    <div class="q-text">スニーカー（¥18,000）を買った後、残ったお金の使い方として大切な考え方はどれ？</div>
+    <div class="q-sub">「最も大切だと思う」と「最も関係ない」を1つずつ選んでください</div>
+
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も大切だと思う</div>
+      <div class="dual-badge worst">💨 最も関係ないと思う</div>
+    </div>
+
+    <div class="dual-options" id="q3Options">
+      <div class="dual-option">
+        <div class="dual-option-text">「必要なもの」と「欲しいもの」に分けて、優先順位を決めてから使う</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',0)"  id="q3b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',0)" id="q3w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">欲しいと思ったときが買い時。後悔しないために今を大切にする</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',1)"  id="q3b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',1)" id="q3w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">まず一定額を貯金して、残りで自由に使うルールを作る</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',2)"  id="q3b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',2)" id="q3w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">将来のために今は我慢して、できるだけ多く貯金する</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(3,'best',3)"  id="q3b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(3,'worst',3)" id="q3w3">💨</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="confirm-btn" id="q3Confirm" onclick="confirmQ3()">この選択で決定する</button>
+
+    <div class="feedback-box" id="q3Feedback">
+      <div class="feedback-head">
+        <div class="feedback-icon">💡</div>
+        <div class="feedback-label">解説</div>
+      </div>
+      <div class="feedback-text" id="q3FeedbackText"></div>
+      <div class="feedback-hl" id="q3Hl"></div>
+    </div>
+    <div class="ai-box" id="q3AI">
+      <div class="ai-head">
+        <div class="ai-icon">🤖</div>
+        <div class="ai-label">FPからのひとこと</div>
+      </div>
+      <div class="ai-text" id="q3AIText">
+        <div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div>
+      </div>
+    </div>
+    <button class="next-btn" id="q3Next" onclick="showQ4()">次の問題へ →</button>
+  </div>
+
+  <!-- Q4：トレードオフ（最も／最も当てはまらない） -->
+  <div class="question-card" id="q4Card" style="display:none">
+    <div class="q-step">STEP 4 / 4</div>
+    <div class="q-label reason">考え方を選ぶ</div>
+    <div class="q-text">時給の高いバイトを選んで週3日入ることになった健太が「失っているもの」として最も本質的な視点はどれ？</div>
+    <div class="q-sub">「最も大切な視点」と「最も関係ない視点」を1つずつ選んでください</div>
+
+    <div class="dual-instructions">
+      <div class="dual-badge best">🌟 最も本質的</div>
+      <div class="dual-badge worst">💨 最も関係ない</div>
+    </div>
+
+    <div class="dual-options" id="q4Options">
+      <div class="dual-option">
+        <div class="dual-option-text">友達と過ごす時間やサッカーへの集中力など、お金では買えない価値を失っている</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',0)"  id="q4b0">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',0)" id="q4w0">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">今の体力と健康。疲れが蓄積すると勉強や部活のパフォーマンスが下がる</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',1)"  id="q4b1">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',1)" id="q4w1">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">バイトの経験自体が将来の仕事につながるので、実は何も失っていない</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',2)"  id="q4b2">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',2)" id="q4w2">💨</button>
+        </div>
+      </div>
+      <div class="dual-option">
+        <div class="dual-option-text">自分の時間を切り売りしている。時間はすべての人に平等な唯一の資産だ</div>
+        <div class="dual-btns">
+          <button class="dual-btn best-btn"  onclick="dualSelect(4,'best',3)"  id="q4b3">🌟</button>
+          <button class="dual-btn worst-btn" onclick="dualSelect(4,'worst',3)" id="q4w3">💨</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="confirm-btn" id="q4Confirm" onclick="confirmQ4()">この選択で決定する</button>
+
+    <div class="feedback-box" id="q4Feedback">
+      <div class="feedback-head">
+        <div class="feedback-icon">💡</div>
+        <div class="feedback-label">解説</div>
+      </div>
+      <div class="feedback-text" id="q4FeedbackText"></div>
+      <div class="feedback-hl" id="q4Hl"></div>
+    </div>
+    <div class="ai-box" id="q4AI">
+      <div class="ai-head">
+        <div class="ai-icon">🤖</div>
+        <div class="ai-label">FPからのひとこと</div>
+      </div>
+      <div class="ai-text" id="q4AIText">
+        <div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> 考え中…</div>
+      </div>
+    </div>
+    <button class="next-btn" id="q4Next" onclick="showEnding()">結果を見る →</button>
+  </div>
+
+  <!-- エンディング -->
+  <div class="ending-card" id="endingCard">
+    <div class="ending-badge">エピソード① クリア！</div>
+    <div class="ending-title">バイトで学んだ<br>3つのこと</div>
+    <div class="ending-points">
+      <div class="ending-point">「時給が高い＝得」ではない。交通費・時間・体力もコストだ</div>
+      <div class="ending-point">稼いだお金は「必要なもの（Need）」と「欲しいもの（Want）」に分けて考える</div>
+      <div class="ending-point">何かを得るには何かを手放す。これがトレードオフ<button class="g-btn" onclick="gShow('トレードオフ')">?</button>の本質</div>
+    </div>
+    <div class="ending-next">次のエピソードでは「進路を選ぶ意味」を考えます</div>
+    <button class="restart-btn" onclick="restartGame()">もう一度やってみる</button>
+  </div>
+
+</div>
+
+<script>
+
+const GLOS = {
+  'トレードオフ': '何かを得るために、別の何かを手放すこと。「時給が高い仕事を選んだら移動時間が増えた」など、得るものと失うものが必ずセットになっている状態のこと。',
+  '手取り': '給料から税金・社会保険料などが引かれた後、実際に受け取れる金額のこと。バイトの場合は年収103万円以下なら所得税はかからない。',
+  '生涯収入': '生まれてから引退するまでに稼ぐ収入の合計。高卒と大卒で平均3,000〜5,000万円の差があると言われるが、離職・転職・仕事の質によって大きく変わる。',
+  '奨学金': '大学などの学費を借りるお金。日本では多くが「貸与型（返済が必要）」で、卒業後に毎月返済が始まる。返済不要の「給付型」もある。',
+  '4象限マトリクス': '「やりたい・やりたくない」と「できる・できない」の2軸で物事を4つのエリアに分けて整理する考え方。仕事選びでは「できる×やりたい」の象限が最も強みになる。',
+  'インターンシップ': '学生が就職前に企業で実際に働く体験プログラム。短期（1〜5日）と長期（1ヶ月以上）があり、採用選考につながることも多い。',
+  '自己PR': '就活で「自分にはこんな能力・経験がある」と企業にアピールすること。「何をしたか」ではなく「なぜやったか・何を学んだか」を語ることが重要。',
+  'キャッシュフロー': '毎月のお金の流れのこと。収入から支出を引いた残りがプラスなら黒字、マイナスなら赤字。家計管理の基本はこのキャッシュフローを把握することから始まる。',
+  '厚生年金': '会社員が加入する年金。給料から天引きされ、会社も同額を負担する。国民年金より受取額が多く、退職すると加入できなくなる。',
+  '就業不能保険': '病気やケガで長期間働けなくなったとき、毎月一定額を受け取れる保険。特に独身など収入が途絶えたときに助けてくれる人がいない場合に重要。',
+  'NISA': '少額投資非課税制度。通常、投資で得た利益には約20%の税金がかかるが、NISAを使うと非課税になる。2024年から新NISAになり、年間投資上限が大幅に拡大した。',
+  'iDeCo': '個人型確定拠出年金。老後のために毎月積み立てる制度で、掛金が全額所得控除になるため節税効果が高い。60歳まで引き出せない代わりに、税制上の優遇が大きい。',
+  '生命保険': '死亡したとき、残された家族にお金が支払われる保険。独身で扶養家族がいない場合は優先度が低く、医療保険や就業不能保険の方が重要なことが多い。',
+  '介護保険': '40歳から強制加入する公的保険。介護が必要になった場合、ヘルパー・デイサービス・施設入所などのサービスを1〜3割の自己負担で使える。',
+  '繰り上げ返済': '住宅ローンなどを予定より早く多く返済すること。利息の支払いを減らせるが手元の現金が減るため、老後資金や緊急予備資金とのバランスが重要。',
+  '退職金': '会社を退職するときに支給されるお金。長年勤めるほど多くなる傾向があるが、近年は制度がない企業も増えており、金額は会社次第。',
+  '公的年金': '国が運営する老後の収入保障制度。国民年金（全員加入）と厚生年金（会社員加入）がある。受給額は加入期間や収入によって異なる。'
+};
+function gShow(term) {
+  var d = GLOS[term]; if (!d) return;
+  document.getElementById('gTerm').textContent = term;
+  document.getElementById('gDef').textContent = d;
+  document.getElementById('gOverlay').classList.add('open');
+}
+function gClose() { document.getElementById('gOverlay').classList.remove('open'); }
+
+
+// ── 状態 ──
+let dualState = {}; // {q: {best: idx, worst: idx}}
+let q2PredictVal = null;
+let sampleFn = null;
+
+// ── sample capability 初期化 ──
+(async () => {
+  try {
+    sampleFn = await claude.use('sample');
+  } catch(e) {
+    sampleFn = null;
+  }
+})();
+
+// ── プログレス ──
+function setProgress(v) {
+  document.getElementById('progressBar').style.width = v + '%';
+}
+
+// ── 計算機 ──
+let calcExpr = '';
+let calcJustCalc = false;
+
+function calcInput(k) {
+  const disp = document.getElementById('calcDisplay');
+  if (k === 'C') { calcExpr = ''; disp.textContent = '0'; calcJustCalc = false; return; }
+  if (k === '=') {
+    try {
+      let expr = calcExpr
+        .replace(/÷/g,'/').replace(/×/g,'*')
+        .replace(/－/g,'-').replace(/＋/g,'+');
+      let result = Function('"use strict"; return (' + expr + ')')();
+      result = Math.round(result * 100) / 100;
+      disp.textContent = result.toLocaleString();
+      calcExpr = String(result);
+      calcJustCalc = true;
+      // 予測欄に反映
+      setPredictVal(result);
+    } catch(e) { disp.textContent = 'エラー'; calcExpr = ''; }
+    return;
+  }
+  if (k === '±') {
+    try {
+      let v = parseFloat(calcExpr) * -1;
+      calcExpr = String(v);
+      disp.textContent = v.toLocaleString();
+    } catch(e) {}
+    return;
+  }
+  if (k === '%') {
+    try {
+      let v = parseFloat(calcExpr) / 100;
+      calcExpr = String(v);
+      disp.textContent = v.toLocaleString();
+    } catch(e) {}
+    return;
+  }
+  if (calcJustCalc && /[0-9.]/.test(k)) { calcExpr = ''; calcJustCalc = false; }
+  calcExpr += k;
+  disp.textContent = calcExpr;
+}
+
+function useCalcResult() {
+  const disp = document.getElementById('calcDisplay');
+  const raw = disp.textContent.replace(/,/g,'');
+  const val = parseFloat(raw);
+  if (!isNaN(val) && val > 0) setPredictVal(val);
+}
+
+function setPredictVal(val) {
+  q2PredictVal = val;
+  const pd = document.getElementById('predictDisplay');
+  pd.textContent = '¥' + Math.round(val).toLocaleString() + ' 円';
+}
+
+// ── Q2 予測 ──
+function submitQ2() {
+  if (!q2PredictVal || q2PredictVal <= 0) {
+    alert('計算機で金額を計算して「入力する」ボタンを押してください');
+    return;
+  }
+  document.getElementById('predictSubmit').disabled = true;
+  document.querySelectorAll('.calc-btn').forEach(b => b.disabled = true);
+
+  const actual = 68640;
+  const diff = q2PredictVal - actual;
+  document.getElementById('q2YourVal').textContent = '¥' + Math.round(q2PredictVal).toLocaleString();
+
+  let comment = '';
+  if (q2PredictVal > actual * 1.25)
+    comment = '少し多めの予測でした。実際は交通費が引かれるので思ったより少なくなります。月12日×5時間の計算、合っていましたか？';
+  else if (q2PredictVal < actual * 0.75)
+    comment = '少し少なめの予測でした。月に12日×5時間働くとまとまった金額になりますね。';
+  else
+    comment = 'かなり正確な予測です！計算の感覚が身についていますね。';
+
+  document.getElementById('q2FeedbackText').textContent = comment;
+  document.getElementById('q2Feedback').classList.add('show');
+  setProgress(55);
+
+  const prompt = `あなたは1級FPの金融教育講師です。中高生とその家族向けにわかりやすく教えています。
+中高生が「時給1,200円・週3日・5時間・交通費280円/日のバイトの月の手取り」を${Math.round(q2PredictVal).toLocaleString()}円と予測しました。実際は68,640円です。
+予測との差は${Math.round(q2PredictVal - 68640).toLocaleString()}円です。
+この結果について「お金の感覚を鍛えること」をテーマに、温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`;
+  callAI('q2', prompt);
+  document.getElementById('q2Next').classList.add('show');
+}
+
+// ── デュアル選択ロジック ──
+function dualSelect(q, type, idx) {
+  if (!dualState[q]) dualState[q] = { best: null, worst: null };
+  const state = dualState[q];
+  const other = type === 'best' ? 'worst' : 'best';
+
+  // 同じボタンを再押し → 解除
+  if (state[type] === idx) {
+    state[type] = null;
+  } else {
+    // 相手側に同じidxが選ばれていたら解除
+    if (state[other] === idx) state[other] = null;
+    state[type] = idx;
+  }
+  renderDualButtons(q);
+  // 両方選ばれたら確認ボタン表示
+  const confirmId = 'q' + q + 'Confirm';
+  const btn = document.getElementById(confirmId);
+  if (btn) btn.className = 'confirm-btn' + (state.best !== null && state.worst !== null ? ' show' : '');
+}
+
+function renderDualButtons(q) {
+  const state = dualState[q] || {};
+  for (let i = 0; i < 4; i++) {
+    const bb = document.getElementById('q' + q + 'b' + i);
+    const wb = document.getElementById('q' + q + 'w' + i);
+    if (!bb || !wb) continue;
+    bb.className = 'dual-btn best-btn'  + (state.best  === i ? ' active' : '');
+    wb.className = 'dual-btn worst-btn' + (state.worst === i ? ' active' : '');
+  }
+}
+
+// ── Q1 確定 ──
+const Q1_BEST_CORRECT = [1, 2]; // 交通費計算 or シフト確認 が正解
+const Q1_WORST_CORRECT = [0, 3]; // 時給だけ or 友達と同じ
+
+function confirmQ1() {
+  const s = dualState[1];
+  lockDualButtons(1);
+  document.getElementById('q1Confirm').style.display = 'none';
+
+  const bestGood  = Q1_BEST_CORRECT.includes(s.best);
+  const worstGood = Q1_WORST_CORRECT.includes(s.worst);
+
+  let txt = '', hl = '';
+  if (bestGood && worstGood) {
+    txt = '素晴らしい！バイト選びの本質を捉えています。時給だけで判断するのは危険で、実際にかかるコスト全体を見ることが大切です。';
+    hl = '時給 × 時間 だけがバイトの収入ではありません。交通費・移動時間・シフトの柔軟性も「コスト」として計算に入れましょう。';
+  } else if (bestGood) {
+    txt = '「最も大切」はよく選べました！「最も関係ない」は、時給だけで選ぶ姿勢や友達に合わせる判断が最もお金のことを考えていない選択です。';
+    hl = '友達と同じだから安心、というのはバイト選びでは危険な発想です。自分の生活に合っているかが最優先。';
+  } else if (worstGood) {
+    txt = '「最も関係ない」はよく選べました！大切な考え方は、交通費や時間も含めたトータルコストで判断することです。';
+    hl = '「時給が高い＝お得」という思い込みは、実際の手取りを計算してみると崩れることが多いです。';
+  } else {
+    txt = '難しかったですね。実は、バイト選びで最も大切なのは「トータルで考えること」です。時給の高さだけで選んでも、交通費や移動時間で逆転することがあります。';
+    hl = '「時給が高い方が絶対得」は思い込みです。交通費・移動時間・シフトの柔軟さまで含めて比べましょう。';
+  }
+
+  document.getElementById('q1FeedbackText').textContent = txt;
+  document.getElementById('q1Hl').textContent = hl;
+  document.getElementById('q1Feedback').classList.add('show');
+  setProgress(25);
+
+  const prompt = `あなたは1級FPの金融教育講師。中高生とその家族向けです。
+バイト選びの考え方クイズで、
+・最も大切：選択肢${s.best+1}（「${['時給が高い方を選ぶ','トータルコストで比較','シフトの柔軟さ優先','職場の雰囲気・人間関係'][s.best]}」）
+・最も関係ない：選択肢${s.worst+1}（「${['時給が高い方を選ぶ','トータルコストで比較','シフトの柔軟さ優先','職場の雰囲気・人間関係'][s.worst]}」）
+と選びました。正解の組み合わせは「最も大切→交通費計算かシフト確認、最も関係ない→時給だけor友達に合わせる」です。
+この選択に対して、温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`;
+  callAI('q1', prompt);
+  document.getElementById('q1Next').classList.add('show');
+}
+
+function showQ2() {
+  document.getElementById('q2Card').style.display = 'block';
+  document.getElementById('q2Card').scrollIntoView({ behavior:'smooth', block:'start' });
+  setProgress(40);
+}
+
+// ── Q3 確定 ──
+function confirmQ3() {
+  const s = dualState[3];
+  lockDualButtons(3);
+  document.getElementById('q3Confirm').style.display = 'none';
+
+  const bestGood  = s.best === 0;   // NeedとWant を分ける
+  const worstGood = s.worst === 1 || s.worst === 3; // すぐ使うor人に合わせる
+
+  let txt = '', hl = '';
+  if (bestGood && worstGood) {
+    txt = '完璧です！「NeedとWantを分ける」はお金の管理の基本中の基本。一生使えるスキルです。';
+    hl = 'Need（必要）：ないと本当に困るもの　　Want（欲しい）：あったら嬉しいもの\nこの区別が家計管理の出発点になります。';
+  } else {
+    txt = '「必要なもの（Need）」と「欲しいもの（Want）」を分けて優先順位を決めることが、お金を上手に使う第一歩です。「とりあえず全額貯金」も目的がなければ続きません。';
+    hl = '感情でお金を使う前に「これはNeed？それともWant？」と1回立ち止まる習慣が大切です。';
+  }
+
+  document.getElementById('q3FeedbackText').textContent = txt;
+  document.getElementById('q3Hl').textContent = hl;
+  document.getElementById('q3Feedback').classList.add('show');
+  setProgress(75);
+
+  const prompt = `あなたは1級FPの金融教育講師。中高生とその家族向けです。
+お金の使い方クイズで
+・最も大切：選択肢${s.best+1}（「${['NeedとWant分けて優先順位','欲しいときが買い時','先に貯金してから使う','今は我慢して貯金'][s.best]}」）
+・最も関係ない：選択肢${s.worst+1}（「${['NeedとWant分けて優先順位','欲しいときが買い時','先に貯金してから使う','今は我慢して貯金'][s.worst]}」）
+と選びました。温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`;
+  callAI('q3', prompt);
+  document.getElementById('q3Next').classList.add('show');
+}
+
+function showQ3() {
+  document.getElementById('q3Card').style.display = 'block';
+  document.getElementById('q3Card').scrollIntoView({ behavior:'smooth', block:'start' });
+  setProgress(60);
+}
+
+// ── Q4 確定 ──
+function confirmQ4() {
+  const s = dualState[4];
+  lockDualButtons(4);
+  document.getElementById('q4Confirm').style.display = 'none';
+
+  const bestGood  = s.best === 0;
+  const worstGood = s.worst === 2 || s.worst === 3;
+
+  let txt = '', hl = '';
+  if (bestGood && worstGood) {
+    txt = '素晴らしい！これがトレードオフの本質です。お金を得ることで、時間・集中力・友人との記憶という「値段のつかない価値」を手放していることに気づけましたか？';
+    hl = 'お金には値段がつく。でも時間・集中力・人との関係には値段がつかない。だからこそ何のためにお金を稼ぐかが大事。';
+  } else {
+    txt = 'トレードオフとは「何かを得ると、必ず何か別のものを失う」ということ。バイトでお金を得た健太は、友達との時間やサッカーへの集中力を失っています。';
+    hl = '体力の消耗は回復できる。でも失った時間は取り戻せない。時間の価値を意識することが大人への第一歩です。';
+  }
+
+  document.getElementById('q4FeedbackText').textContent = txt;
+  document.getElementById('q4Hl').textContent = hl;
+  document.getElementById('q4Feedback').classList.add('show');
+  setProgress(95);
+
+  const prompt = `あなたは1級FPの金融教育講師。中高生とその家族向けです。
+トレードオフクイズで
+・最も本質的：選択肢${s.best+1}（「${['お金で買えない価値を失う','体力・健康','バイト経験は財産','時間を切り売りしている'][s.best]}」）
+・最も関係ない：選択肢${s.worst+1}（「${['お金で買えない価値を失う','体力・健康','バイト経験は財産','時間を切り売りしている'][s.worst]}」）
+と選びました。「時間はお金で買えない」というテーマで、温かく簡潔な2〜3文のひとことをください。文字数カウントや補足説明は不要です。`;
+  callAI('q4', prompt);
+  document.getElementById('q4Next').classList.add('show');
+}
+
+function showQ4() {
+  document.getElementById('q4Card').style.display = 'block';
+  document.getElementById('q4Card').scrollIntoView({ behavior:'smooth', block:'start' });
+  setProgress(80);
+}
+
+function showEnding() {
+  document.getElementById('endingCard').classList.add('show');
+  setProgress(100);
+  document.getElementById('endingCard').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ── ユーティリティ ──
+function lockDualButtons(q) {
+  for (let i = 0; i < 4; i++) {
+    const bb = document.getElementById('q'+q+'b'+i);
+    const wb = document.getElementById('q'+q+'w'+i);
+    if (bb) bb.disabled = true;
+    if (wb) wb.disabled = true;
+  }
+}
+
+// ── AI フィードバック（sample capability） ──
+async function callAI(qId, prompt) {
+  const boxId = qId + 'AI';
+  const textId = qId + 'AIText';
+  document.getElementById(boxId).classList.add('show');
+
+  if (!sampleFn) {
+    // sampleが未解決の場合、少し待って再試行
+    await new Promise(r => setTimeout(r, 2000));
+    sampleFn = await claude.use('sample').catch(() => null);
+  }
+
+  if (!sampleFn) {
+    document.getElementById(textId).innerHTML = '<span class="ai-unavailable">Claudeアカウントをお持ちの方には、ここにFPからの個別コメントが表示されます。</span>';
+    return;
+  }
+
+  const el = document.getElementById(textId);
+  el.innerHTML = '<div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div> FPが考え中…</div>';
+
+  try {
+    const { text } = await sampleFn(prompt, {
+      modelTier: 'quick',
+      cache: false,
+      onText: ({ text: t }) => { el.textContent = t; }
+    });
+    el.textContent = text;
+  } catch(e) {
+    if (e.code === 'not_granted') {
+      el.innerHTML = '<span class="ai-unavailable">AIフィードバックの利用が許可されませんでした</span>';
+    } else if (e.code === 'rate_limited') {
+      el.innerHTML = '<span class="ai-unavailable">しばらく待ってからもう一度お試しください</span>';
+    } else {
+      el.innerHTML = '<span class="ai-unavailable">AIフィードバックを取得できませんでした（' + (e.code||'不明') + '）</span>';
+    }
+  }
+}
+
+// ── リスタート ──
+function restartGame() {
+  dualState = {};
+  q2PredictVal = null;
+  setProgress(0);
+  ['q2Card','q3Card','q4Card'].forEach(id => document.getElementById(id).style.display = 'none');
+  ['q1Feedback','q2Feedback','q3Feedback','q4Feedback','q1AI','q2AI','q3AI','q4AI']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('show'); });
+  ['q1Next','q2Next','q3Next','q4Next','q1Confirm','q2Next','q3Confirm','q4Confirm']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.className = el.className.replace(/\bshow\b/,'').trim(); });
+  document.getElementById('endingCard').classList.remove('show');
+  document.getElementById('predictDisplay').textContent = '金額を入力してください';
+  document.getElementById('predictSubmit').disabled = false;
+  document.getElementById('calcDisplay').textContent = '0';
+  document.querySelectorAll('.calc-btn').forEach(b => b.disabled = false);
+  // dual buttons リセット
+  [1,3,4].forEach(q => {
+    for(let i=0;i<4;i++){
+      const bb = document.getElementById('q'+q+'b'+i);
+      const wb = document.getElementById('q'+q+'w'+i);
+      if(bb){ bb.className='dual-btn best-btn'; bb.disabled=false; }
+      if(wb){ wb.className='dual-btn worst-btn'; wb.disabled=false; }
+    }
+    const cf = document.getElementById('q'+q+'Confirm');
+    if(cf){ cf.className='confirm-btn'; cf.style.display=''; }
+  });
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+</script>
+
+<div class="glossary-overlay" id="glossaryOverlay" onclick="if(event.target===this)closeGlossary()">
+  <div class="glossary-card">
+    <div class="glossary-header">
+      <div class="glossary-term" id="glossaryTerm"></div>
+      <button class="glossary-close" onclick="closeGlossary()">✕</button>
+    </div>
+    <div class="glossary-def" id="glossaryDef"></div>
+    <div class="glossary-footer">
+      <button class="glossary-ok" onclick="closeGlossary()">わかった！</button>
+    </div>
+  </div>
+</div>
+
+<div class="g-overlay" id="gOverlay" onclick="if(event.target===this)gClose()">
+  <div class="g-card">
+    <div class="g-head">
+      <div class="g-term" id="gTerm"></div>
+      <button class="g-close" onclick="gClose()">✕</button>
+    </div>
+    <div class="g-def" id="gDef"></div>
+    <div class="g-foot">
+      <button class="g-ok" id="gOkBtn" style="background:var(--blue)" onclick="gClose()">わかった！</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
