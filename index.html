@@ -647,49 +647,14 @@ function toggleDone(n) {
   else document.getElementById('completePanel').classList.remove('show');
 }
 
-async function showComplete() {
+function showComplete() {
   document.getElementById('completePanel').classList.add('show');
   setTimeout(() => {
     document.getElementById('completePanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, 100);
   if (commentGenerated) return;
   commentGenerated = true;
-
-  const el = document.getElementById('aiCommentText');
-  el.innerHTML = '<div class="ai-loading"><div class="dots"><span></span><span></span><span></span></div>&ensp;考え中…</div>';
-
-  // sampleFnを確実に初期化
-  if (!sampleFn) {
-    try { sampleFn = await claude.use('sample'); } catch(e) { sampleFn = null; }
-  }
-  if (!sampleFn) {
-    el.textContent = '';
-    return;
-  }
-
-  const prompt = `あなたは「FP事務所 あなたの家計のパートナー」代表の1級FP・山本亮です。
-中高生とその家族が、以下の5つのエピソードからなる金融教育ゲームを全て完了しました。
-EP.1 バイトと時間のトレードオフ（高校生・健太）
-EP.2 進路を選ぶ「理由」を考える（高校生・さくら）
-EP.3 仕事選びと自分の価値を上げる（大学生・蓮）
-EP.4 結婚とお金の選択（社会人29歳・蓮）
-EP.5 老後の準備と人生最大の支出ラッシュ（45歳・蓮）
-全5エピソードを終えたプレイヤーへの総括メッセージを書いてください。
-・「何のために」という問いがどのエピソードにも共通していたこと
-・お金は「稼ぐ・使う・備える」という流れで動いていること
-・このゲームをきっかけに家族でお金の話をしてほしいこと
-・もっと深く学びたい方には講座もあること
-以上を含めて、温かく本質を突いた200〜250文字のメッセージをFPとして一人称で書いてください。文字数カウントや補足説明は不要です。`;
-
-  try {
-    const { text } = await sampleFn(prompt, {
-      modelTier: 'default', cache: false,
-      onText: ({ text: t }) => { el.textContent = t; }
-    });
-    el.textContent = text;
-  } catch(e) {
-    el.textContent = '全5エピソードを完了していただき、ありがとうございます。どのステージでも共通するのは「何のために」という問いです。ぜひ家族でお金の話をしてみてください。';
-  }
+  document.getElementById('aiCommentText').textContent = '全5つのエピソードを完了していただき、ありがとうございます。バイト・進路・仕事・結婚・老後——どのステージにも共通するのは「何のために」という問いでした。お金は稼ぐだけでなく、使い方と備え方で人生が変わります。このゲームをきっかけに、ぜひご家族でお金の話をしてみてください。もっと深く学びたい方は、講座もお気軽にご相談ください。';
 }
 </script>
 </body>
